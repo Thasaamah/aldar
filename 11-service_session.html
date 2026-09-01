@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Service Session</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .danger-btn{
+      min-height:42px;padding:0 13px;border-radius:12px;border:1px solid rgba(231,126,126,.18);
+      background:rgba(231,126,126,.06);color:#e99a9a;font-weight:700;cursor:pointer
+    }
+    .hero{
+      padding:20px;border-radius:21px;background:
+        linear-gradient(125deg,rgba(216,184,117,.12),rgba(255,255,255,.035) 50%,rgba(143,166,146,.07));
+      border:1px solid rgba(216,184,117,.14);margin-bottom:16px
+    }
+    .hero-main{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}
+    .customer{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:58px;height:58px;border-radius:17px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-weight:800
+    }
+    .customer small{color:#c5aa70;font-size:.63rem;text-transform:uppercase;letter-spacing:.1em}
+    .customer h2{margin-top:5px;font-size:1.15rem}.customer p{margin-top:5px;color:#858880;font-size:.69rem}
+    .status-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.62rem;font-weight:700
+    }
+    .status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .live{color:var(--green);background:rgba(131,201,142,.09)}
+    .room{color:var(--blue);background:rgba(126,166,219,.09)}
+    .vip{color:var(--purple);background:rgba(177,139,216,.09)}
+    .meta{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:16px}
+    .meta-item{padding:11px;border-radius:13px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.055)}
+    .meta-item span{display:block;color:#74776f;font-size:.59rem;text-transform:uppercase}
+    .meta-item strong{display:block;margin-top:5px;font-size:.7rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:19px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+    .section-head h3{font-size:.96rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.68rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.6rem;font-weight:700}
+    .timer-card{
+      display:grid;grid-template-columns:220px minmax(0,1fr);gap:18px;align-items:center
+    }
+    .timer{
+      padding:22px;border-radius:18px;text-align:center;background:rgba(216,184,117,.055);
+      border:1px solid rgba(216,184,117,.12)
+    }
+    .timer span{display:block;color:#777a73;font-size:.62rem;text-transform:uppercase;letter-spacing:.08em}
+    .timer strong{display:block;margin-top:8px;font-family:"Playfair Display",serif;font-size:2.55rem;color:#ecd59f}
+    .timer small{display:block;margin-top:5px;color:var(--green);font-size:.62rem}
+    .timer-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+    .timer-btn{
+      min-height:38px;padding:0 13px;border-radius:10px;border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.025);color:#a7aaa2;font-size:.65rem;font-weight:700;cursor:pointer
+    }
+    .timer-btn.primary{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .session-progress{padding:15px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)}
+    .progress-head{display:flex;justify-content:space-between;gap:10px;font-size:.66rem}
+    .progress-head span{color:#7b7e77}.progress-head strong{color:#d4d4cc}
+    .progress{height:9px;margin-top:10px;border-radius:999px;background:rgba(255,255,255,.055);overflow:hidden}
+    .fill{height:100%;width:38%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .timeline{display:grid;gap:10px;margin-top:14px}
+    .timeline-step{
+      display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;padding:10px;
+      border-radius:13px;background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.05)
+    }
+    .step-no{
+      width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:rgba(255,255,255,.05);
+      color:#8a8d85;font-size:.62rem;font-weight:800
+    }
+    .timeline-step.done .step-no{background:rgba(131,201,142,.1);color:var(--green)}
+    .timeline-step.active{border-color:rgba(216,184,117,.2);background:rgba(216,184,117,.05)}
+    .timeline-step.active .step-no{background:rgba(216,184,117,.12);color:#ecd59f}
+    .timeline-step strong{font-size:.67rem}.timeline-step p{margin-top:3px;color:#757870;font-size:.59rem}
+    .timeline-step span{font-size:.59rem;color:#777a73}
+    .preference-grid,.resource-grid,.addon-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .preference,.resource,.addon{
+      padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .preference span,.resource span,.addon span{display:block;color:#757870;font-size:.58rem;text-transform:uppercase}
+    .preference strong,.resource strong,.addon strong{display:block;margin-top:5px;font-size:.69rem}
+    .resource small{display:block;margin-top:4px;color:var(--green);font-size:.58rem}
+    .addon{cursor:pointer;position:relative}
+    .addon.selected{background:rgba(216,184,117,.07);border-color:rgba(216,184,117,.23)}
+    .addon input{position:absolute;right:10px;top:10px;width:17px;height:17px;accent-color:#c9a75d}
+    .addon strong{padding-right:24px}.addon small{display:block;margin-top:5px;color:#dfc78f;font-size:.6rem}
+    .consumable-table{width:100%;border-collapse:collapse}
+    .consumable-table th,.consumable-table td{padding:11px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:.65rem}
+    .consumable-table th{color:#777a73;font-size:.58rem;text-transform:uppercase;letter-spacing:.05em}
+    .consumable-table td{color:#c6c8c0}
+    .qty{display:flex;align-items:center;gap:6px}
+    .qty button{
+      width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.025);color:#a7aaa2;cursor:pointer
+    }
+    .qty strong{min-width:20px;text-align:center}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:7px;color:#c7c9c1;font-size:.69rem;font-weight:600}
+    textarea,select{
+      width:100%;border-radius:13px;border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.13);color:var(--text);outline:none
+    }
+    select{height:47px;padding:0 13px}textarea{min-height:95px;padding:12px;resize:vertical}
+    textarea::placeholder{color:#666961}
+    textarea:focus,select:focus{border-color:rgba(216,184,117,.48);box-shadow:0 0 0 4px rgba(216,184,117,.07)}
+    select option{background:#171813}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:150px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.15),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.59rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.35rem}
+    .summary-body{padding:17px}
+    .live-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(131,201,142,.05);
+      border:1px solid rgba(131,201,142,.11)
+    }
+    .live-box span{color:#777a73;font-size:.62rem}.live-box strong{display:block;margin-top:6px;color:var(--green);font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.67rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .notice{
+      margin-top:11px;padding:11px;border-radius:13px;background:rgba(227,164,93,.055);
+      border:1px solid rgba(227,164,93,.11);color:#aaa69d;font-size:.62rem;line-height:1.5
+    }
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action,.danger-action{min-height:46px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .danger-action{border:1px solid rgba(231,126,126,.16);background:rgba(231,126,126,.05);color:#e89b9b}
+    .activity-list{display:grid;gap:8px}
+    .activity{padding:10px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .activity-top{display:flex;justify-content:space-between;gap:10px}
+    .activity strong{font-size:.65rem}.activity span{color:#72756d;font-size:.57rem}
+    .activity p{margin-top:4px;color:#858880;font-size:.59rem;line-height:1.4}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1230px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .hero-main{flex-direction:column}.status-group{justify-content:flex-start}.meta{grid-template-columns:repeat(2,1fr)}
+      .timer-card,.form-grid{grid-template-columns:1fr}.preference-grid,.resource-grid,.addon-grid{grid-template-columns:1fr}
+      .side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.meta{grid-template-columns:1fr}.footer{flex-direction:column}.topbar-actions .danger-btn{display:none}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8v8M13 12h8"/></svg><span>Customer Check-In</span></a>
+    </nav>
+
+    <div class="nav-label">Guest Journey</div>
+    <nav class="nav">
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Service Session</span><b class="badge">5</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg><span>Add-on Services</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m5 13 4 4L19 7"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span>Service Completion</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Billing & POS</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Active Session</small><strong>R04 • Moroccan Bath</strong><span>Noor Ahmed • Live treatment</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Service Session</h1><p>Manage the live treatment, follow the protocol, record products, and prepare the guest for completion.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="assistBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 22a10 10 0 1 0-10-10"/><path d="M2 22 7 17"/><path d="M12 8v4M12 16h.01"/></svg>Request Assistance</button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+        <button class="danger-btn" id="incidentBtn">Report Incident</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="customer">
+          <div class="avatar">FA</div>
+          <div>
+            <small>Session SES-260720-041</small>
+            <h2>Fatima Al Nuaimi</h2>
+            <p>Luxury Hammam • Therapist Noor Ahmed • Gold Member • 18 previous visits</p>
+          </div>
+        </div>
+        <div class="status-group">
+          <span class="status live">Session Live</span>
+          <span class="status room">R04 Ready</span>
+          <span class="status vip">Gold Member</span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="meta-item"><span>Scheduled</span><strong>03:30–05:00 PM</strong></div>
+        <div class="meta-item"><span>Started</span><strong>03:34 PM</strong></div>
+        <div class="meta-item"><span>Duration</span><strong>90 Minutes</strong></div>
+        <div class="meta-item"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+        <div class="meta-item"><span>Room</span><strong>R04 • Hammam</strong></div>
+        <div class="meta-item"><span>Package</span><strong>Session 3 of 6</strong></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Live Session Timer</h3><p>Control the treatment timer and monitor the session journey.</p></div>
+            <span class="tag">Auto-Synced</span>
+          </div>
+
+          <div class="timer-card">
+            <div class="timer">
+              <span>Elapsed Time</span>
+              <strong id="timerText">00:34:18</strong>
+              <small>55 min 42 sec remaining</small>
+              <div class="timer-actions">
+                <button class="timer-btn primary" id="pauseBtn">Pause</button>
+                <button class="timer-btn" id="extendBtn">+ 10 Min</button>
+                <button class="timer-btn" id="resetBtn">Reset</button>
+              </div>
+            </div>
+
+            <div>
+              <div class="session-progress">
+                <div class="progress-head"><span>Overall treatment progress</span><strong>38%</strong></div>
+                <div class="progress"><div class="fill"></div></div>
+              </div>
+
+              <div class="timeline">
+                <article class="timeline-step done"><div class="step-no">1</div><div><strong>Welcome & Consultation</strong><p>Health notes reviewed and treatment explained.</p></div><span>Done</span></article>
+                <article class="timeline-step done"><div class="step-no">2</div><div><strong>Steam Preparation</strong><p>Body warmed and prepared for exfoliation.</p></div><span>Done</span></article>
+                <article class="timeline-step active"><div class="step-no">3</div><div><strong>Black Soap & Exfoliation</strong><p>Current treatment phase in progress.</p></div><span>18 min</span></article>
+                <article class="timeline-step"><div class="step-no">4</div><div><strong>Body Mask & Rinse</strong><p>Mineral mask followed by warm rinse.</p></div><span>Pending</span></article>
+                <article class="timeline-step"><div class="step-no">5</div><div><strong>Argan Oil Finish</strong><p>Moisturising finish and relaxation.</p></div><span>Pending</span></article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Guest Preferences & Safety Notes</h3><p>Keep important treatment preferences visible throughout the session.</p></div>
+            <span class="tag">Critical Information</span>
+          </div>
+
+          <div class="preference-grid">
+            <div class="preference"><span>Pressure</span><strong>Soft to Medium</strong></div>
+            <div class="preference"><span>Fragrance</span><strong>Jasmine Preferred</strong></div>
+            <div class="preference"><span>Temperature</span><strong>Cool Room</strong></div>
+            <div class="preference"><span>Skin Condition</span><strong>Mild Sensitivity</strong></div>
+            <div class="preference"><span>Avoid</span><strong>Strong Eucalyptus</strong></div>
+            <div class="preference"><span>Communication</span><strong>Quiet Treatment</strong></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Resources & Room Readiness</h3><p>Current therapist, room, and support assignments.</p></div>
+          </div>
+
+          <div class="resource-grid">
+            <div class="resource"><span>Primary Therapist</span><strong>Noor Ahmed</strong><small>Checked in and active</small></div>
+            <div class="resource"><span>Assistant</span><strong>Not Assigned</strong><small>Available on request</small></div>
+            <div class="resource"><span>Treatment Room</span><strong>R04 • Moroccan Bath</strong><small>Temperature 23°C</small></div>
+            <div class="resource"><span>Housekeeping</span><strong>Prepared by Maya</strong><small>Checklist complete</small></div>
+            <div class="resource"><span>Next Booking</span><strong>05:20 PM</strong><small>20 min turnover buffer</small></div>
+            <div class="resource"><span>Guest Locker</span><strong>L-024</strong><small>Key with guest</small></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Add-on Services</h3><p>Recommend and add suitable enhancements during the active session.</p></div>
+            <span class="tag">Guest Approval Required</span>
+          </div>
+
+          <div class="addon-grid">
+            <label class="addon selected"><input type="checkbox" checked><span>Selected</span><strong>Premium Argan Oil Upgrade</strong><small>+ QAR 80</small></label>
+            <label class="addon"><input type="checkbox"><span>Available</span><strong>Express Scalp Massage</strong><small>+ QAR 110 • 15 min</small></label>
+            <label class="addon"><input type="checkbox"><span>Available</span><strong>Herbal Tea Ritual</strong><small>+ QAR 45</small></label>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Products & Consumables</h3><p>Record actual treatment consumption for inventory and service costing.</p></div>
+          </div>
+
+          <div style="overflow:auto">
+            <table class="consumable-table">
+              <thead><tr><th>Product</th><th>Standard</th><th>Actual Qty</th><th>Unit</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>Moroccan Black Soap</td><td>35 ml</td><td><div class="qty"><button>-</button><strong>35</strong><button>+</button></div></td><td>ml</td><td style="color:var(--green)">Normal</td></tr>
+                <tr><td>Ghassoul Clay Mask</td><td>50 g</td><td><div class="qty"><button>-</button><strong>50</strong><button>+</button></div></td><td>g</td><td style="color:var(--green)">Normal</td></tr>
+                <tr><td>Argan Body Oil</td><td>20 ml</td><td><div class="qty"><button>-</button><strong>25</strong><button>+</button></div></td><td>ml</td><td style="color:var(--orange)">Upgrade</td></tr>
+                <tr><td>Kessa Exfoliation Glove</td><td>1</td><td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td><td>Piece</td><td style="color:var(--green)">Issued</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Therapist Notes</h3><p>Record treatment observations, customer response, and completion recommendations.</p></div>
+          </div>
+
+          <div class="form-grid">
+            <div><label>Guest Comfort</label><select><option>Comfortable</option><option>Minor Adjustment Required</option><option>Discomfort Reported</option></select></div>
+            <div><label>Treatment Response</label><select><option>Positive</option><option>Neutral</option><option>Sensitive Reaction</option></select></div>
+            <div class="full"><label>Live Session Notes</label><textarea>Guest is comfortable. Skin is mildly sensitive during exfoliation, so pressure has been reduced. No adverse reaction observed. Jasmine fragrance used as requested.</textarea></div>
+            <div class="full"><label>Recommended Aftercare / Next Visit</label><textarea>Recommend hydration facial after 7–10 days and continue fragrance-free body moisturiser for the next 24 hours.</textarea></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Live Treatment</small>
+            <h3>Luxury Hammam</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="live-box">
+              <span>Current Status</span>
+              <strong>Session in Progress</strong>
+            </div>
+
+            <div class="summary-row"><span>Customer</span><strong>Fatima Al Nuaimi</strong></div>
+            <div class="summary-row"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+            <div class="summary-row"><span>Room</span><strong>R04</strong></div>
+            <div class="summary-row"><span>Current Phase</span><strong>Exfoliation</strong></div>
+            <div class="summary-row"><span>Elapsed</span><strong>34 Minutes</strong></div>
+            <div class="summary-row"><span>Remaining</span><strong>56 Minutes</strong></div>
+            <div class="summary-row"><span>Add-on Value</span><strong>QAR 80</strong></div>
+
+            <div class="notice">The next booking in R04 starts at 05:20 PM. Current session has a 20-minute room-turnover buffer.</div>
+
+            <div class="actions">
+              <button class="primary-action" id="completeBtn">Proceed to Service Completion</button>
+              <button class="secondary-action" id="saveBtn">Save Session Notes</button>
+              <button class="secondary-action" id="addServiceBtn">Add Another Service</button>
+              <button class="secondary-action" id="notifyBtn">Notify Reception</button>
+              <button class="danger-action" id="stopBtn">Stop Session Early</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Session Activity</h3><p>Live operational timeline.</p></div></div>
+          <div class="activity-list">
+            <article class="activity"><div class="activity-top"><strong>Session Started</strong><span>03:34 PM</span></div><p>Noor Ahmed started the Luxury Hammam protocol.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Argan Oil Upgrade Added</strong><span>03:47 PM</span></div><p>Guest approved a QAR 80 premium oil enhancement.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Pressure Adjusted</strong><span>03:58 PM</span></div><p>Exfoliation pressure changed to soft due to skin sensitivity.</p></article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Live session synchronized • Started at 03:34 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+  const timerText=document.getElementById("timerText");
+  const pauseBtn=document.getElementById("pauseBtn");
+  let seconds=2058;
+  let running=true;
+
+  function formatTime(total){
+    const h=String(Math.floor(total/3600)).padStart(2,"0");
+    const m=String(Math.floor((total%3600)/60)).padStart(2,"0");
+    const s=String(total%60).padStart(2,"0");
+    return `${h}:${m}:${s}`;
+  }
+
+  setInterval(()=>{
+    if(running){
+      seconds++;
+      timerText.textContent=formatTime(seconds);
+    }
+  },1000);
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  pauseBtn.addEventListener("click",()=>{
+    running=!running;
+    pauseBtn.textContent=running?"Pause":"Resume";
+    showToast(running?"Session timer resumed.":"Session timer paused.");
+  });
+
+  document.getElementById("extendBtn").addEventListener("click",()=>showToast("Session extended by 10 minutes."));
+  document.getElementById("resetBtn").addEventListener("click",()=>{
+    seconds=0;
+    timerText.textContent=formatTime(seconds);
+    showToast("Session timer reset.");
+  });
+
+  document.querySelectorAll(".addon").forEach(item=>{
+    item.addEventListener("click",event=>{
+      if(event.target.tagName!=="INPUT"){
+        const checkbox=item.querySelector("input");
+        checkbox.checked=!checkbox.checked;
+      }
+      item.classList.toggle("selected",item.querySelector("input").checked);
+    });
+  });
+
+  document.querySelectorAll(".qty button").forEach(button=>{
+    button.addEventListener("click",()=>{
+      const valueEl=button.parentElement.querySelector("strong");
+      let value=Number(valueEl.textContent);
+      value=button.textContent==="+"?value+1:Math.max(0,value-1);
+      valueEl.textContent=value;
+    });
+  });
+
+  document.getElementById("assistBtn").addEventListener("click",()=>showToast("Assistance request sent to reception and floor supervisor."));
+  document.getElementById("incidentBtn").addEventListener("click",()=>showToast("Incident reporting form opened."));
+  document.getElementById("completeBtn").addEventListener("click",()=>showToast("Service completion workflow opened."));
+  document.getElementById("saveBtn").addEventListener("click",()=>showToast("Session notes and consumables saved."));
+  document.getElementById("addServiceBtn").addEventListener("click",()=>showToast("Add-on service selection opened."));
+  document.getElementById("notifyBtn").addEventListener("click",()=>showToast("Reception notified of session progress."));
+  document.getElementById("stopBtn").addEventListener("click",()=>showToast("Early-stop confirmation requested."));
+</script>
+</body>
+</html>

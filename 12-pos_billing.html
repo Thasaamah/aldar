@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | POS Billing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .hero{
+      padding:20px;border-radius:21px;background:
+        linear-gradient(125deg,rgba(216,184,117,.12),rgba(255,255,255,.035) 50%,rgba(143,166,146,.07));
+      border:1px solid rgba(216,184,117,.14);margin-bottom:16px
+    }
+    .hero-main{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}
+    .customer{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:58px;height:58px;border-radius:17px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-weight:800
+    }
+    .customer small{color:#c5aa70;font-size:.63rem;text-transform:uppercase;letter-spacing:.1em}
+    .customer h2{margin-top:5px;font-size:1.15rem}.customer p{margin-top:5px;color:#858880;font-size:.69rem}
+    .status-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.62rem;font-weight:700
+    }
+    .status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .completed{color:var(--green);background:rgba(131,201,142,.09)}
+    .balance{color:var(--orange);background:rgba(227,164,93,.09)}
+    .member{color:var(--purple);background:rgba(177,139,216,.09)}
+    .meta{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:16px}
+    .meta-item{padding:11px;border-radius:13px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.055)}
+    .meta-item span{display:block;color:#74776f;font-size:.59rem;text-transform:uppercase}
+    .meta-item strong{display:block;margin-top:5px;font-size:.7rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:19px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+    .section-head h3{font-size:.96rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.68rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.6rem;font-weight:700}
+    .billing-table{width:100%;border-collapse:collapse}
+    .billing-table th,.billing-table td{padding:12px 10px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:.65rem;vertical-align:middle}
+    .billing-table th{color:#777a73;font-size:.58rem;text-transform:uppercase;letter-spacing:.05em}
+    .billing-table td{color:#c6c8c0}
+    .item-name strong{display:block;font-size:.68rem}.item-name span{display:block;margin-top:4px;color:#74776f;font-size:.59rem}
+    .qty{display:flex;align-items:center;gap:6px}
+    .qty button{
+      width:26px;height:26px;border-radius:8px;border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.025);color:#a7aaa2;cursor:pointer
+    }
+    .qty strong{min-width:20px;text-align:center}
+    .remove{
+      width:28px;height:28px;border-radius:8px;border:1px solid rgba(231,126,126,.13);
+      background:rgba(231,126,126,.05);color:#e79b9b;cursor:pointer
+    }
+    .catalog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+    .catalog-item{
+      padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);cursor:pointer;transition:.2s
+    }
+    .catalog-item:hover{transform:translateY(-2px);border-color:rgba(216,184,117,.2)}
+    .catalog-icon{
+      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+      background:rgba(216,184,117,.08);color:var(--gold);margin-bottom:9px
+    }
+    .catalog-icon svg{width:17px;height:17px;stroke:currentColor}
+    .catalog-item strong{font-size:.66rem}.catalog-item span{display:block;margin-top:4px;color:#74776f;font-size:.58rem;line-height:1.4}
+    .catalog-item small{display:block;margin-top:7px;color:#dfc78f;font-size:.61rem;font-weight:700}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:7px;color:#c7c9c1;font-size:.69rem;font-weight:600}
+    input,select,textarea{
+      width:100%;border-radius:13px;border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.13);color:var(--text);outline:none
+    }
+    input,select{height:47px;padding:0 13px}textarea{min-height:88px;padding:12px;resize:vertical}
+    input::placeholder,textarea::placeholder{color:#666961}
+    input:focus,select:focus,textarea:focus{border-color:rgba(216,184,117,.48);box-shadow:0 0 0 4px rgba(216,184,117,.07)}
+    select option{background:#171813}
+    .discount-row{display:grid;grid-template-columns:1fr 170px 140px;gap:9px}
+    .apply-btn{
+      border:1px solid rgba(216,184,117,.16);border-radius:12px;background:rgba(216,184,117,.06);
+      color:#e7ce95;font-weight:700;cursor:pointer
+    }
+    .payment-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+    .payment-method{
+      padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);cursor:pointer;position:relative
+    }
+    .payment-method.selected{background:rgba(216,184,117,.07);border-color:rgba(216,184,117,.23)}
+    .payment-method input{position:absolute;right:10px;top:10px;width:17px;height:17px;accent-color:#c9a75d}
+    .payment-method strong{font-size:.67rem}.payment-method span{display:block;margin-top:4px;color:#74776f;font-size:.58rem}
+    .split-row{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;align-items:end}
+    .split-row button{
+      width:42px;height:42px;border-radius:11px;border:1px solid rgba(231,126,126,.13);
+      background:rgba(231,126,126,.05);color:#e89a9a;cursor:pointer
+    }
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:150px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.15),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.59rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.35rem}
+    .summary-body{padding:17px}
+    .invoice-box{
+      padding:14px;border-radius:14px;background:rgba(216,184,117,.055);
+      border:1px solid rgba(216,184,117,.12)
+    }
+    .invoice-box span{color:#777a73;font-size:.62rem}.invoice-box strong{display:block;margin-top:6px;color:#ecd59f;font-size:1.05rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.67rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .totals{margin-top:10px;padding:12px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .total-row{display:flex;justify-content:space-between;padding:5px 0;color:#858880;font-size:.65rem}
+    .total-row.grand{padding-top:10px;margin-top:6px;border-top:1px solid rgba(255,255,255,.06);color:#ecd59f;font-size:.98rem;font-weight:800}
+    .total-row.balance-due{color:var(--orange);font-weight:700}
+    .notice{
+      margin-top:11px;padding:11px;border-radius:13px;background:rgba(126,166,219,.05);
+      border:1px solid rgba(126,166,219,.11);color:#aaa69d;font-size:.62rem;line-height:1.5
+    }
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action,.danger-action{min-height:46px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .danger-action{border:1px solid rgba(231,126,126,.16);background:rgba(231,126,126,.05);color:#e89b9b}
+    .loyalty{
+      padding:12px;border-radius:14px;background:rgba(177,139,216,.05);border:1px solid rgba(177,139,216,.11)
+    }
+    .loyalty-top{display:flex;justify-content:space-between;gap:10px}
+    .loyalty strong{font-size:.68rem}.loyalty span{color:#a68ac4;font-size:.62rem}
+    .loyalty p{margin-top:5px;color:#858880;font-size:.6rem;line-height:1.45}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1260px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+      .catalog-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .hero-main{flex-direction:column}.status-group{justify-content:flex-start}.meta{grid-template-columns:repeat(2,1fr)}
+      .form-grid,.discount-row,.split-row{grid-template-columns:1fr}.payment-grid{grid-template-columns:repeat(2,1fr)}
+      .side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.meta,.catalog-grid,.payment-grid{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span></a>
+    </nav>
+
+    <div class="nav-label">Guest Journey</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Service Session</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m5 13 4 4L19 7"/><rect x="3" y="3" width="18" height="18" rx="3"/></svg><span>Service Completion</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>POS Billing</span><b class="badge">3</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Invoice Preview</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Payment History</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Active Counter</small><strong>Reception POS 01</strong><span>Serenity Downtown • Cash drawer open</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>POS Billing</h1><p>Review services, apply discounts, collect payments, issue invoices, and complete the guest checkout.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="holdBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M8 5v14M16 5v14"/></svg>Hold Bill</button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="primary-btn" id="newBillBtn">+ New Bill</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="customer">
+          <div class="avatar">FA</div>
+          <div>
+            <small>Bill BILL-260720-018</small>
+            <h2>Fatima Al Nuaimi</h2>
+            <p>Gold Member • Luxury Hammam completed • 18 previous visits • 2,480 loyalty points</p>
+          </div>
+        </div>
+        <div class="status-group">
+          <span class="status completed">Service Completed</span>
+          <span class="status balance">Balance Due</span>
+          <span class="status member">Gold Member</span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="meta-item"><span>Reservation</span><strong>RSV-260720-041</strong></div>
+        <div class="meta-item"><span>Session</span><strong>SES-260720-041</strong></div>
+        <div class="meta-item"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+        <div class="meta-item"><span>Room</span><strong>R04</strong></div>
+        <div class="meta-item"><span>Advance Paid</span><strong>QAR 200</strong></div>
+        <div class="meta-item"><span>Checkout Time</span><strong>05:08 PM</strong></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Billing Items</h3><p>Review completed services, add-ons, products, and package usage.</p></div>
+            <span class="tag">4 Line Items</span>
+          </div>
+
+          <div style="overflow:auto">
+            <table class="billing-table" id="billingTable">
+              <thead>
+                <tr><th>Item</th><th>Category</th><th>Qty</th><th>Rate</th><th>Discount</th><th>Total</th><th></th></tr>
+              </thead>
+              <tbody>
+                <tr data-total="550">
+                  <td class="item-name"><strong>Luxury Hammam</strong><span>Completed by Noor Ahmed</span></td>
+                  <td>Service</td><td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td>
+                  <td>QAR 550</td><td>QAR 0</td><td class="line-total">QAR 550</td><td><button class="remove">×</button></td>
+                </tr>
+                <tr data-total="80">
+                  <td class="item-name"><strong>Premium Argan Oil Upgrade</strong><span>Guest approved during session</span></td>
+                  <td>Add-on</td><td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td>
+                  <td>QAR 80</td><td>QAR 0</td><td class="line-total">QAR 80</td><td><button class="remove">×</button></td>
+                </tr>
+                <tr data-total="45">
+                  <td class="item-name"><strong>Jasmine Tea Ritual</strong><span>Served in relaxation lounge</span></td>
+                  <td>Add-on</td><td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td>
+                  <td>QAR 45</td><td>QAR 0</td><td class="line-total">QAR 45</td><td><button class="remove">×</button></td>
+                </tr>
+                <tr data-total="95">
+                  <td class="item-name"><strong>Argan Body Moisturiser</strong><span>Retail recommendation</span></td>
+                  <td>Product</td><td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td>
+                  <td>QAR 95</td><td>QAR 0</td><td class="line-total">QAR 95</td><td><button class="remove">×</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Quick Add</h3><p>Add services, products, memberships, or vouchers to the current bill.</p></div>
+          </div>
+
+          <div class="catalog-grid">
+            <article class="catalog-item" data-name="Express Scalp Massage" data-price="110">
+              <div class="catalog-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M8 13c2 2 6 2 8 0"/></svg></div>
+              <strong>Express Scalp Massage</strong><span>15-minute enhancement</span><small>QAR 110</small>
+            </article>
+            <article class="catalog-item" data-name="Hydration Facial" data-price="320">
+              <div class="catalog-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M9 10h.01M15 10h.01M9 15c2 1 4 1 6 0"/></svg></div>
+              <strong>Hydration Facial</strong><span>60-minute facial treatment</span><small>QAR 320</small>
+            </article>
+            <article class="catalog-item" data-name="Gold Membership Renewal" data-price="1800">
+              <div class="catalog-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg></div>
+              <strong>Gold Membership Renewal</strong><span>12-month renewal</span><small>QAR 1,800</small>
+            </article>
+            <article class="catalog-item" data-name="Gift Voucher" data-price="500">
+              <div class="catalog-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 10h16v10H4zM3 6h18v4H3z"/><path d="M12 6v14M7 6c-1.5 0-2.5-.7-2.5-1.8S5.4 2.5 6.7 2.5C9 2.5 12 6 12 6s3-3.5 5.3-3.5c1.3 0 2.2.6 2.2 1.7S18.5 6 17 6"/></svg></div>
+              <strong>Gift Voucher</strong><span>Custom-value digital voucher</span><small>QAR 500</small>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Discounts, Promotions & Loyalty</h3><p>Apply an authorised discount, promo code, voucher, or loyalty redemption.</p></div>
+            <span class="tag">Approval Rules Enabled</span>
+          </div>
+
+          <div class="discount-row">
+            <input type="text" id="promoCode" placeholder="Enter promotion, voucher, or membership code" value="GOLD10">
+            <select id="discountType"><option value="10">Gold Member 10%</option><option value="5">Promotional 5%</option><option value="15">Manager Approved 15%</option><option value="0">No Discount</option></select>
+            <button class="apply-btn" id="applyDiscountBtn">Apply Discount</button>
+          </div>
+
+          <div class="form-grid" style="margin-top:12px">
+            <div><label>Loyalty Redemption</label><select><option>Do Not Redeem</option><option>Redeem 500 Points = QAR 25</option><option>Redeem 1,000 Points = QAR 50</option><option>Redeem 2,000 Points = QAR 100</option></select></div>
+            <div><label>Discount Authorised By</label><select><option>System Membership Rule</option><option>Reception Manager</option><option>Branch Manager</option><option>Marketing Campaign</option></select></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Payment Method</h3><p>Select one or more payment methods and record the collection details.</p></div>
+            <span class="tag">Split Payment Supported</span>
+          </div>
+
+          <div class="payment-grid">
+            <label class="payment-method selected"><input type="radio" name="payment" checked><strong>Card</strong><span>Credit or debit card</span></label>
+            <label class="payment-method"><input type="radio" name="payment"><strong>Cash</strong><span>Cash drawer collection</span></label>
+            <label class="payment-method"><input type="radio" name="payment"><strong>Online Link</strong><span>Send secure payment link</span></label>
+            <label class="payment-method"><input type="radio" name="payment"><strong>Gift Voucher</strong><span>Redeem voucher balance</span></label>
+          </div>
+
+          <div class="form-grid" style="margin-top:12px">
+            <div><label>Reference / Approval Number</label><input type="text" value="AP-835641"></div>
+            <div><label>Payment Terminal</label><select><option>Terminal 01</option><option>Terminal 02</option><option>Manual Entry</option></select></div>
+            <div><label>Tip Amount</label><input type="number" id="tipAmount" value="50"></div>
+            <div><label>Tip Allocation</label><select><option>Noor Ahmed</option><option>Split with Support Team</option><option>General Tip Pool</option></select></div>
+          </div>
+
+          <div class="split-row" style="margin-top:12px">
+            <div><label>Split Method</label><select><option>Card</option><option>Cash</option><option>Online Link</option><option>Gift Voucher</option></select></div>
+            <div><label>Amount</label><input type="number" value="493"></div>
+            <button id="removeSplitBtn">×</button>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Invoice & Checkout Details</h3><p>Confirm invoice recipient, tax information, and delivery preference.</p></div>
+          </div>
+
+          <div class="form-grid">
+            <div><label>Invoice Name</label><input type="text" value="Fatima Al Nuaimi"></div>
+            <div><label>Mobile Number</label><input type="text" value="+974 5558 2410"></div>
+            <div><label>Email Address</label><input type="email" value="fatima@example.com"></div>
+            <div><label>Invoice Delivery</label><select><option>WhatsApp + Email</option><option>WhatsApp Only</option><option>Email Only</option><option>Print Only</option></select></div>
+            <div><label>Tax Registration Number</label><input type="text" placeholder="Optional customer/company tax number"></div>
+            <div><label>Checkout Status</label><select><option>Paid & Completed</option><option>Partially Paid</option><option>Payment Pending</option><option>Corporate Credit</option></select></div>
+            <div class="full"><label>Billing Notes</label><textarea>Gold membership discount applied. Retail product recommended by Noor Ahmed. Guest requested invoice through WhatsApp and email.</textarea></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Invoice Preview</small>
+            <h3>Checkout Summary</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="invoice-box">
+              <span>Invoice Number</span>
+              <strong>INV-260720-018</strong>
+            </div>
+
+            <div class="summary-row"><span>Customer</span><strong>Fatima Al Nuaimi</strong></div>
+            <div class="summary-row"><span>Membership</span><strong>Gold Member</strong></div>
+            <div class="summary-row"><span>Items</span><strong id="itemCount">4</strong></div>
+            <div class="summary-row"><span>Payment</span><strong>Card</strong></div>
+            <div class="summary-row"><span>Invoice Delivery</span><strong>WhatsApp + Email</strong></div>
+
+            <div class="totals">
+              <div class="total-row"><span>Subtotal</span><strong id="subtotal">QAR 770.00</strong></div>
+              <div class="total-row"><span>Discount</span><strong id="discount">- QAR 77.00</strong></div>
+              <div class="total-row"><span>Tax</span><strong id="tax">QAR 0.00</strong></div>
+              <div class="total-row"><span>Tip</span><strong id="tip">QAR 50.00</strong></div>
+              <div class="total-row grand"><span>Grand Total</span><strong id="grandTotal">QAR 743.00</strong></div>
+              <div class="total-row"><span>Advance Received</span><strong>QAR 200.00</strong></div>
+              <div class="total-row balance-due"><span>Balance to Collect</span><strong id="balanceDue">QAR 543.00</strong></div>
+            </div>
+
+            <div class="notice">Card payment can be completed on Terminal 01. The invoice and loyalty update will be sent automatically after payment confirmation.</div>
+
+            <div class="actions">
+              <button class="primary-action" id="payBtn">Collect QAR 543 & Complete</button>
+              <button class="secondary-action" id="previewBtn">Preview Invoice</button>
+              <button class="secondary-action" id="sendLinkBtn">Send Payment Link</button>
+              <button class="secondary-action" id="printBtn">Print Provisional Bill</button>
+              <button class="danger-action" id="voidBtn">Void Bill</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Loyalty & Membership</h3><p>Benefits generated from this bill.</p></div></div>
+          <div class="loyalty">
+            <div class="loyalty-top"><strong>Expected Points</strong><span>+743 points</span></div>
+            <p>Points will be credited after successful payment. Current balance: 2,480 points.</p>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>POS Counter 01 • Cash drawer opened at 09:02 AM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+  const tableBody=document.querySelector("#billingTable tbody");
+  let discountRate=10;
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  function currency(value){
+    return "QAR "+Number(value).toFixed(2);
+  }
+
+  function recalculate(){
+    let subtotal=0;
+    let itemCount=0;
+    document.querySelectorAll("#billingTable tbody tr").forEach(row=>{
+      const base=Number(row.dataset.total);
+      const qty=Number(row.querySelector(".qty strong").textContent);
+      const total=base*qty;
+      row.querySelector(".line-total").textContent=currency(total);
+      subtotal+=total;
+      itemCount+=qty;
+    });
+    const discount=subtotal*(discountRate/100);
+    const tip=Number(document.getElementById("tipAmount").value||0);
+    const grand=subtotal-discount+tip;
+    const balance=Math.max(0,grand-200);
+
+    document.getElementById("subtotal").textContent=currency(subtotal);
+    document.getElementById("discount").textContent="- "+currency(discount);
+    document.getElementById("tip").textContent=currency(tip);
+    document.getElementById("grandTotal").textContent=currency(grand);
+    document.getElementById("balanceDue").textContent=currency(balance);
+    document.getElementById("itemCount").textContent=itemCount;
+    document.getElementById("payBtn").textContent=`Collect QAR ${balance.toFixed(0)} & Complete`;
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.addEventListener("click",event=>{
+    if(event.target.matches(".qty button")){
+      const valueEl=event.target.parentElement.querySelector("strong");
+      let value=Number(valueEl.textContent);
+      value=event.target.textContent==="+"?value+1:Math.max(1,value-1);
+      valueEl.textContent=value;
+      recalculate();
+    }
+    if(event.target.matches(".remove")){
+      event.target.closest("tr").remove();
+      recalculate();
+      showToast("Billing item removed.");
+    }
+  });
+
+  document.querySelectorAll(".catalog-item").forEach(item=>{
+    item.addEventListener("click",()=>{
+      const name=item.dataset.name;
+      const price=Number(item.dataset.price);
+      const row=document.createElement("tr");
+      row.dataset.total=price;
+      row.innerHTML=`
+        <td class="item-name"><strong>${name}</strong><span>Added from quick catalogue</span></td>
+        <td>Additional</td>
+        <td><div class="qty"><button>-</button><strong>1</strong><button>+</button></div></td>
+        <td>${currency(price)}</td><td>QAR 0</td><td class="line-total">${currency(price)}</td><td><button class="remove">×</button></td>`;
+      tableBody.appendChild(row);
+      recalculate();
+      showToast(name+" added to the bill.");
+    });
+  });
+
+  document.querySelectorAll(".payment-method").forEach(item=>{
+    item.addEventListener("click",()=>{
+      document.querySelectorAll(".payment-method").forEach(method=>method.classList.remove("selected"));
+      item.classList.add("selected");
+      item.querySelector("input").checked=true;
+    });
+  });
+
+  document.getElementById("applyDiscountBtn").addEventListener("click",()=>{
+    discountRate=Number(document.getElementById("discountType").value);
+    recalculate();
+    showToast(discountRate+"% discount applied successfully.");
+  });
+
+  document.getElementById("tipAmount").addEventListener("input",recalculate);
+  document.getElementById("holdBtn").addEventListener("click",()=>showToast("Bill placed on hold."));
+  document.getElementById("newBillBtn").addEventListener("click",()=>showToast("New billing workspace opened."));
+  document.getElementById("removeSplitBtn").addEventListener("click",()=>showToast("Split payment row removed."));
+  document.getElementById("payBtn").addEventListener("click",()=>showToast("Payment collected and checkout completed."));
+  document.getElementById("previewBtn").addEventListener("click",()=>showToast("Invoice preview opened."));
+  document.getElementById("sendLinkBtn").addEventListener("click",()=>showToast("Secure payment link sent to the customer."));
+  document.getElementById("printBtn").addEventListener("click",()=>showToast("Provisional bill sent to the printer."));
+  document.getElementById("voidBtn").addEventListener("click",()=>showToast("Bill void confirmation requested."));
+
+  recalculate();
+</script>
+</body>
+</html>

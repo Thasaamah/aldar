@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Reports & Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.outline-btn{border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer}
+    .menu-btn{width:42px;height:42px;border-radius:12px;display:none}
+    .menu-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .toolbar{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+      padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border);margin-bottom:15px
+    }
+    .toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .filter{
+      min-height:39px;padding:0 11px;border-radius:11px;border:1px solid var(--border);
+      background:rgba(255,255,255,.035);color:#c4c6bf;outline:none;font-size:.64rem
+    }
+    .filter option{background:#171813}
+    .segmented{display:flex;padding:4px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+    .segment{
+      min-height:34px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#888b83;font-size:.64rem;cursor:pointer
+    }
+    .segment.active-segment{background:rgba(216,184,117,.1);color:#ecd69f}
+    .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:15px}
+    .kpi{
+      padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border)
+    }
+    .kpi span{display:block;color:#777a73;font-size:.58rem;text-transform:uppercase}
+    .kpi strong{display:block;margin-top:7px;font-size:1.05rem;color:#ecd59f}
+    .kpi small{display:block;margin-top:5px;color:#858880;font-size:.58rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+    .section-head h3{font-size:.95rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.67rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.59rem;font-weight:700}
+    .chart-grid{display:grid;grid-template-columns:1.35fr .65fr;gap:12px}
+    .chart-box{
+      padding:14px;border-radius:16px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .chart-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .chart-head strong{font-size:.69rem}.chart-head span{font-size:.55rem;color:#777a73}
+    .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:9px}
+    .legend span{font-size:.54rem;color:#92958d;display:flex;align-items:center;gap:6px}
+    .legend i{width:8px;height:8px;border-radius:50%;display:block}
+    .line-chart{height:230px;position:relative;margin-top:13px;border-left:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+    .line-chart:before,.line-chart:after{
+      content:"";position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.05)
+    }
+    .line-chart:before{top:33%}.line-chart:after{top:66%}
+    .bars{
+      position:absolute;left:4%;right:2%;bottom:0;top:8%;display:flex;align-items:flex-end;justify-content:space-between;gap:10px
+    }
+    .bar-group{flex:1;height:100%;display:flex;align-items:flex-end;gap:4px}
+    .bar{flex:1;border-radius:7px 7px 0 0;background:linear-gradient(to top,rgba(182,140,70,.8),rgba(217,185,117,.95))}
+    .bar.alt{background:linear-gradient(to top,rgba(126,166,219,.45),rgba(126,166,219,.8))}
+    .donut-wrap{display:grid;place-items:center;height:230px}
+    .donut{
+      width:160px;height:160px;border-radius:50%;
+      background:conic-gradient(var(--gold) 0 42%,var(--blue) 42% 67%,var(--green) 67% 84%,var(--purple) 84% 100%);
+      position:relative
+    }
+    .donut:after{
+      content:"";position:absolute;inset:28px;border-radius:50%;background:#171814;border:1px solid rgba(255,255,255,.05)
+    }
+    .donut-center{
+      position:absolute;z-index:2;text-align:center
+    }
+    .donut-center strong{display:block;font-size:1.1rem;color:#ecd59f}.donut-center span{font-size:.56rem;color:#888b83}
+    .perf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .perf{
+      padding:13px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .perf strong{display:block;font-size:.67rem}.perf span{display:block;margin-top:4px;color:#74776f;font-size:.55rem}
+    .perf .value{margin-top:10px;color:#efd79f;font-size:1rem;font-weight:800}
+    .progress{height:6px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden}
+    .progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:11px 9px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:.63rem}
+    th{color:#767970;font-size:.56rem;text-transform:uppercase}
+    td{color:#c6c8c0}td strong{display:block;font-size:.66rem}td span{display:block;margin-top:4px;color:#74776f;font-size:.56rem}
+    .pill{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:.54rem;font-weight:700}
+    .pill-up{color:var(--green);background:rgba(131,201,142,.08)}
+    .pill-down{color:var(--red);background:rgba(231,126,126,.08)}
+    .pill-stable{color:var(--blue);background:rgba(126,166,219,.08)}
+    .report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .report{
+      padding:13px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .report strong{display:block;font-size:.66rem}.report span{display:block;margin-top:4px;color:#74776f;font-size:.55rem}
+    .report p{margin-top:7px;color:#888b83;font-size:.58rem;line-height:1.45}
+    .report button{
+      width:100%;min-height:34px;margin-top:10px;border-radius:10px;border:1px solid rgba(216,184,117,.12);
+      background:rgba(216,184,117,.05);color:#e4ca92;font-size:.56rem;cursor:pointer
+    }
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:150px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.12),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.58rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.3rem}
+    .summary-body{padding:17px}
+    .live-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(216,184,117,.05);
+      border:1px solid rgba(216,184,117,.11)
+    }
+    .live-box span{color:#777a73;font-size:.61rem}.live-box strong{display:block;margin-top:6px;color:#efd79f;font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.66rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action{min-height:44px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .insight-list{display:grid;gap:8px}
+    .insight{
+      padding:11px;border-radius:13px;background:rgba(126,166,219,.05);border:1px solid rgba(126,166,219,.1)
+    }
+    .insight strong{font-size:.63rem;color:#adc7e8}.insight p{margin-top:5px;color:#969990;font-size:.58rem;line-height:1.45}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1240px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+      .chart-grid{grid-template-columns:1fr}.perf-grid,.report-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .kpi-grid,.perf-grid,.report-grid{grid-template-columns:repeat(2,1fr)}.side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:500px){.kpi-grid,.perf-grid,.report-grid{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Analytics</div>
+    <nav class="nav">
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Reports & Analytics</span><b class="badge">28</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 16V9M12 16V6M16 16v-4"/></svg><span>Revenue Reports</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l5 3"/></svg><span>Booking Analytics</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8h4M19 6v4"/></svg><span>Customer Analytics</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Therapist Performance</span></a>
+    </nav>
+
+    <div class="nav-label">Management</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 20h18M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg><span>Branch Comparison</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Scheduled Reports</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Report Builder</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Reporting Status</small><strong>28 Active Reports</strong><span>8 scheduled • 4 executive packs</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Reports & Analytics</h1><p>Executive insight across revenue, bookings, customers, therapists, branches, memberships, inventory, and campaigns.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="scheduleBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>Schedule Report</button>
+        <button class="outline-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export Dashboard</button>
+        <button class="primary-btn" id="builderBtn">+ Create Report</button>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="segmented">
+          <button class="segment active-segment">Executive</button>
+          <button class="segment">Revenue</button>
+          <button class="segment">Operations</button>
+          <button class="segment">Customers</button>
+          <button class="segment">Workforce</button>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <select class="filter"><option>All Branches</option><option>Serenity Downtown</option><option>West Bay Branch</option></select>
+        <select class="filter"><option>This Month</option><option>Today</option><option>This Week</option><option>This Quarter</option><option>This Year</option></select>
+        <select class="filter"><option>Compare: Previous Month</option><option>Previous Period</option><option>Previous Year</option><option>No Comparison</option></select>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi"><span>Total Revenue</span><strong>QAR 1.28M</strong><small>+12.4% vs last month</small></article>
+      <article class="kpi"><span>Completed Bookings</span><strong>2,846</strong><small>+8.1% growth</small></article>
+      <article class="kpi"><span>Average Bill Value</span><strong>QAR 449</strong><small>+3.8%</small></article>
+      <article class="kpi"><span>Room Occupancy</span><strong>78%</strong><small>Peak 91%</small></article>
+      <article class="kpi"><span>Customer Retention</span><strong>72%</strong><small>+5.2 points</small></article>
+      <article class="kpi"><span>Gross Margin</span><strong>64.8%</strong><small>+1.9 points</small></article>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Revenue & Booking Trend</h3><p>Monthly revenue and completed booking movement across the selected period.</p></div>
+            <span class="tag">Updated Live</span>
+          </div>
+
+          <div class="chart-grid">
+            <div class="chart-box">
+              <div class="chart-head"><strong>Revenue vs Bookings</strong><span>Jan–Jul 2026</span></div>
+              <div class="legend"><span><i style="background:var(--gold)"></i>Revenue</span><span><i style="background:var(--blue)"></i>Bookings</span></div>
+              <div class="line-chart">
+                <div class="bars">
+                  <div class="bar-group"><div class="bar" style="height:55%"></div><div class="bar alt" style="height:46%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:62%"></div><div class="bar alt" style="height:52%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:68%"></div><div class="bar alt" style="height:57%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:73%"></div><div class="bar alt" style="height:63%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:78%"></div><div class="bar alt" style="height:69%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:85%"></div><div class="bar alt" style="height:77%"></div></div>
+                  <div class="bar-group"><div class="bar" style="height:94%"></div><div class="bar alt" style="height:84%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-box">
+              <div class="chart-head"><strong>Revenue Mix</strong><span>Current Month</span></div>
+              <div class="donut-wrap">
+                <div class="donut"></div>
+                <div class="donut-center"><strong>QAR 1.28M</strong><span>Total Revenue</span></div>
+              </div>
+              <div class="legend"><span><i style="background:var(--gold)"></i>Services 42%</span><span><i style="background:var(--blue)"></i>Packages 25%</span><span><i style="background:var(--green)"></i>Memberships 17%</span><span><i style="background:var(--purple)"></i>Retail 16%</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Operational Performance</h3><p>Key utilisation, productivity, conversion, and customer value indicators.</p></div>
+          </div>
+
+          <div class="perf-grid">
+            <article class="perf"><strong>Therapist Utilisation</strong><span>Target 82%</span><div class="value">79%</div><div class="progress"><i style="width:79%"></i></div></article>
+            <article class="perf"><strong>Room Utilisation</strong><span>Target 80%</span><div class="value">78%</div><div class="progress"><i style="width:78%"></i></div></article>
+            <article class="perf"><strong>Lead Conversion</strong><span>CRM Pipeline</span><div class="value">31.8%</div><div class="progress"><i style="width:68%"></i></div></article>
+            <article class="perf"><strong>Member Revenue Share</strong><span>Target 45%</span><div class="value">48%</div><div class="progress"><i style="width:88%"></i></div></article>
+            <article class="perf"><strong>Repeat Visit Rate</strong><span>Within 90 days</span><div class="value">72%</div><div class="progress"><i style="width:72%"></i></div></article>
+            <article class="perf"><strong>No-Show Rate</strong><span>Target below 4%</span><div class="value">3.2%</div><div class="progress"><i style="width:32%"></i></div></article>
+            <article class="perf"><strong>Retail Attachment</strong><span>Invoices with retail</span><div class="value">18.6%</div><div class="progress"><i style="width:57%"></i></div></article>
+            <article class="perf"><strong>Package Redemption</strong><span>Healthy benchmark 65%</span><div class="value">68%</div><div class="progress"><i style="width:68%"></i></div></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Branch Comparison</h3><p>Compare commercial and operational performance across branches.</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Branch</th><th>Revenue</th><th>Growth</th><th>Bookings</th><th>Occupancy</th><th>Avg Bill</th><th>Retention</th><th>Margin</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Serenity Downtown</strong><span>Primary Branch</span></td><td>QAR 782K</td><td><span class="pill pill-up">+14.8%</span></td><td>1,692</td><td>82%</td><td>QAR 462</td><td>74%</td><td>66.2%</td></tr>
+                <tr><td><strong>West Bay Branch</strong><span>Premium Branch</span></td><td>QAR 498K</td><td><span class="pill pill-up">+8.9%</span></td><td>1,154</td><td>72%</td><td>QAR 431</td><td>69%</td><td>62.7%</td></tr>
+                <tr><td><strong>Corporate Wellness</strong><span>Mobile / On-site</span></td><td>QAR 96K</td><td><span class="pill pill-stable">+1.2%</span></td><td>184</td><td>—</td><td>QAR 522</td><td>81%</td><td>58.4%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Top Services & Packages</h3><p>Revenue, volume, margin, and trend for leading offerings.</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Offering</th><th>Category</th><th>Revenue</th><th>Units</th><th>Avg Price</th><th>Margin</th><th>Trend</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Luxury Hammam</strong><span>SRV-HAM-001</span></td><td>Service</td><td>QAR 284K</td><td>516</td><td>QAR 550</td><td>68%</td><td><span class="pill pill-up">+18.6%</span></td></tr>
+                <tr><td><strong>Wellness Signature 6</strong><span>PKG-WEL-006</span></td><td>Package</td><td>QAR 198K</td><td>88</td><td>QAR 2,250</td><td>61%</td><td><span class="pill pill-up">+12.2%</span></td></tr>
+                <tr><td><strong>Deep Tissue Massage</strong><span>SRV-MAS-004</span></td><td>Service</td><td>QAR 176K</td><td>419</td><td>QAR 420</td><td>64%</td><td><span class="pill pill-up">+9.7%</span></td></tr>
+                <tr><td><strong>Hydration Facial</strong><span>SRV-FAC-003</span></td><td>Service</td><td>QAR 146K</td><td>456</td><td>QAR 320</td><td>59%</td><td><span class="pill pill-down">-2.8%</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Report Library</h3><p>Frequently used management, finance, operations, and customer reports.</p></div>
+            <span class="tag">28 Reports</span>
+          </div>
+
+          <div class="report-grid">
+            <article class="report"><strong>Daily Business Summary</strong><span>Management</span><p>Revenue, bookings, check-ins, no-shows, collections, and operational alerts.</p><button>Open Report</button></article>
+            <article class="report"><strong>Revenue by Service</strong><span>Finance</span><p>Service-wise revenue, discount, tax, cost, margin, and transaction volume.</p><button>Open Report</button></article>
+            <article class="report"><strong>Therapist Performance</strong><span>Workforce</span><p>Booked hours, utilisation, revenue, commission, customer rating, and repeat visits.</p><button>Open Report</button></article>
+            <article class="report"><strong>Customer Retention</strong><span>CRM</span><p>New, repeat, inactive, reactivated, churn-risk, and lifetime-value segments.</p><button>Open Report</button></article>
+            <article class="report"><strong>Membership Performance</strong><span>Membership</span><p>Plan sales, active members, renewals, expiry, benefits, and member revenue.</p><button>Open Report</button></article>
+            <article class="report"><strong>Inventory Consumption</strong><span>Inventory</span><p>Room-wise usage, service cost, wastage, expiry, low stock, and stock valuation.</p><button>Open Report</button></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Executive Performance</small>
+            <h3>Management Snapshot</h3>
+          </div>
+          <div class="summary-body">
+            <div class="live-box"><span>Net Revenue This Month</span><strong>QAR 1,280,400</strong></div>
+            <div class="summary-row"><span>Revenue Growth</span><strong style="color:var(--green)">+12.4%</strong></div>
+            <div class="summary-row"><span>Gross Margin</span><strong>64.8%</strong></div>
+            <div class="summary-row"><span>Operating Occupancy</span><strong>78%</strong></div>
+            <div class="summary-row"><span>New Customers</span><strong>428</strong></div>
+            <div class="summary-row"><span>Repeat Customers</span><strong>1,864</strong></div>
+            <div class="summary-row"><span>Member Revenue Share</span><strong>48%</strong></div>
+            <div class="actions">
+              <button class="primary-action" id="execPackBtn">Generate Executive Pack</button>
+              <button class="secondary-action" id="pdfBtn">Export as PDF</button>
+              <button class="secondary-action" id="excelBtn">Export to Excel</button>
+              <button class="secondary-action" id="emailBtn">Email Dashboard</button>
+              <button class="secondary-action" id="compareBtn">Compare Branches</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Management Insights</h3><p>AI-style observations from current performance.</p></div></div>
+          <div class="insight-list">
+            <article class="insight"><strong>Weekend Capacity Opportunity</strong><p>Luxury Hammam demand exceeds 90% occupancy after 4 PM. Extending therapist coverage could add approximately QAR 38,000 monthly revenue.</p></article>
+            <article class="insight"><strong>Retention Improvement</strong><p>Customers receiving follow-up within 48 hours show 21% higher repeat-booking rates.</p></article>
+            <article class="insight"><strong>Margin Improvement</strong><p>Retail attachment after facial services is below target. Promoting recommended skincare may increase monthly margin by QAR 14,000.</p></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Scheduled Reports</h3><p>Automated management delivery.</p></div></div>
+          <div class="summary-row"><span>Daily Business Summary</span><strong>Every Day • 8 PM</strong></div>
+          <div class="summary-row"><span>Weekly Management Pack</span><strong>Monday • 8 AM</strong></div>
+          <div class="summary-row"><span>Monthly Finance Report</span><strong>1st • 9 AM</strong></div>
+          <div class="summary-row"><span>Inventory Consumption</span><strong>Friday • 5 PM</strong></div>
+          <div class="summary-row"><span>CRM Performance</span><strong>Sunday • 9 AM</strong></div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Analytics last refreshed at 03:01 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".segment").forEach(button=>{
+    button.addEventListener("click",()=>{
+      document.querySelectorAll(".segment").forEach(item=>item.classList.remove("active-segment"));
+      button.classList.add("active-segment");
+      showToast(button.textContent+" analytics view selected.");
+    });
+  });
+
+  document.querySelectorAll(".report button").forEach(button=>{
+    button.addEventListener("click",()=>showToast("Selected report opened."));
+  });
+
+  document.getElementById("scheduleBtn").addEventListener("click",()=>showToast("Report scheduling workflow opened."));
+  document.getElementById("exportBtn").addEventListener("click",()=>showToast("Dashboard export prepared."));
+  document.getElementById("builderBtn").addEventListener("click",()=>showToast("Custom report builder opened."));
+  document.getElementById("execPackBtn").addEventListener("click",()=>showToast("Executive management pack generated."));
+  document.getElementById("pdfBtn").addEventListener("click",()=>showToast("PDF export prepared."));
+  document.getElementById("excelBtn").addEventListener("click",()=>showToast("Excel export prepared."));
+  document.getElementById("emailBtn").addEventListener("click",()=>showToast("Dashboard email composer opened."));
+  document.getElementById("compareBtn").addEventListener("click",()=>showToast("Branch comparison opened."));
+</script>
+</body>
+</html>

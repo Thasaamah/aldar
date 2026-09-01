@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Room Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .toolbar{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+      padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border);margin-bottom:15px
+    }
+    .toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .filter{
+      min-height:39px;padding:0 11px;border-radius:11px;border:1px solid var(--border);
+      background:rgba(255,255,255,.035);color:#c4c6bf;outline:none;font-size:.64rem
+    }
+    .filter option{background:#171813}
+    .search{min-width:240px}
+    .segmented{display:flex;padding:4px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+    .segment{
+      min-height:34px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#888b83;font-size:.64rem;cursor:pointer
+    }
+    .segment.active-segment{background:rgba(216,184,117,.1);color:#ecd69f}
+    .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:15px}
+    .kpi{
+      padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border)
+    }
+    .kpi span{display:block;color:#777a73;font-size:.58rem;text-transform:uppercase}
+    .kpi strong{display:block;margin-top:7px;font-size:1.05rem;color:#ecd59f}
+    .kpi small{display:block;margin-top:5px;color:#858880;font-size:.58rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+    .section-head h3{font-size:.95rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.67rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.59rem;font-weight:700}
+    .room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .room-card{
+      position:relative;overflow:hidden;border-radius:18px;background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.06);transition:.2s
+    }
+    .room-card:hover{transform:translateY(-3px);border-color:rgba(216,184,117,.2)}
+    .room-image{height:118px;background-size:cover;background-position:center;position:relative}
+    .room-image:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(12,13,11,.88),rgba(12,13,11,.12))}
+    .room-code{
+      position:absolute;left:12px;bottom:10px;z-index:2;font-family:"Playfair Display",serif;font-size:1rem
+    }
+    .room-status{
+      position:absolute;right:10px;top:10px;z-index:2;padding:6px 8px;border-radius:999px;
+      font-size:.55rem;font-weight:800;backdrop-filter:blur(8px)
+    }
+    .ready{color:var(--green);background:rgba(22,31,24,.82);border:1px solid rgba(131,201,142,.2)}
+    .occupied{color:var(--gold);background:rgba(31,27,19,.82);border:1px solid rgba(216,184,117,.2)}
+    .cleaning{color:var(--blue);background:rgba(19,26,34,.82);border:1px solid rgba(126,166,219,.2)}
+    .maintenance{color:var(--red);background:rgba(34,20,20,.82);border:1px solid rgba(231,126,126,.2)}
+    .blocked{color:var(--orange);background:rgba(33,27,20,.82);border:1px solid rgba(227,164,93,.2)}
+    .room-body{padding:13px}
+    .room-title{display:flex;justify-content:space-between;gap:10px}
+    .room-title strong{font-size:.69rem}.room-title span{font-size:.58rem;color:#74776f}
+    .room-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:10px}
+    .room-meta div{padding:8px;border-radius:10px;background:rgba(0,0,0,.12)}
+    .room-meta span{display:block;color:#6f726a;font-size:.52rem;text-transform:uppercase}
+    .room-meta strong{display:block;margin-top:4px;font-size:.58rem}
+    .progress{height:6px;margin-top:10px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden}
+    .progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .room-actions{display:flex;gap:7px;margin-top:11px}
+    .room-actions button{
+      flex:1;min-height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);color:#9ea198;font-size:.58rem;cursor:pointer
+    }
+    .room-actions button:first-child{color:#e3c98f;border-color:rgba(216,184,117,.13);background:rgba(216,184,117,.05)}
+    .status-board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .status-column{
+      padding:12px;border-radius:15px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.055)
+    }
+    .status-column h4{font-size:.66rem}.status-column small{display:block;margin-top:4px;color:#73766e;font-size:.56rem}
+    .status-list{display:grid;gap:7px;margin-top:10px}
+    .status-item{
+      padding:9px;border-radius:11px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.04)
+    }
+    .status-item strong{display:block;font-size:.6rem}.status-item span{display:block;margin-top:4px;color:#74776f;font-size:.54rem}
+    .inspection-list,.maintenance-list{display:grid;gap:9px}
+    .inspection,.maintenance-row{
+      padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .row-top{display:flex;justify-content:space-between;gap:10px}
+    .row-top strong{font-size:.66rem}.row-top span{font-size:.57rem;color:#777a73}
+    .inspection p,.maintenance-row p{margin-top:5px;color:#858880;font-size:.58rem;line-height:1.45}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:145px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.12),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.58rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.3rem}
+    .summary-body{padding:17px}
+    .live-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(131,201,142,.05);
+      border:1px solid rgba(131,201,142,.11)
+    }
+    .live-box span{color:#777a73;font-size:.61rem}.live-box strong{display:block;margin-top:6px;color:var(--green);font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.66rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action,.danger-action{min-height:44px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .danger-action{border:1px solid rgba(231,126,126,.16);background:rgba(231,126,126,.05);color:#e89b9b}
+    .alert-list{display:grid;gap:8px}
+    .alert{
+      padding:11px;border-radius:13px;background:rgba(227,164,93,.05);border:1px solid rgba(227,164,93,.1)
+    }
+    .alert strong{font-size:.64rem;color:#e2b47d}.alert p{margin-top:5px;color:#969990;font-size:.58rem;line-height:1.45}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1240px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+      .room-grid{grid-template-columns:repeat(2,1fr)}.status-board{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .kpi-grid,.room-grid,.status-board{grid-template-columns:repeat(2,1fr)}.side-stack{grid-template-columns:1fr}.search{min-width:100%}
+    }
+    @media(max-width:500px){.kpi-grid,.room-grid,.status-board{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Operations</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 4v16M16 4v16M4 10h16"/></svg><span>Room Management</span><b class="badge">8</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Therapist Schedule</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Resource Assignment</span></a>
+    </nav>
+
+    <div class="nav-label">Facility</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 20h18M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg><span>Housekeeping</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="8"/></svg><span>Maintenance</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Inspection Logs</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Room Availability</small><strong>3 Ready Now</strong><span>Serenity Downtown • 8 rooms total</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Room Management</h1><p>Monitor room availability, readiness, housekeeping, maintenance, equipment, and treatment assignments.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="inspectionBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>Room Inspection</button>
+        <button class="outline-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export</button>
+        <button class="primary-btn" id="addRoomBtn">+ Add Room</button>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="segmented">
+          <button class="segment active-segment">Room Cards</button>
+          <button class="segment">Status Board</button>
+          <button class="segment">Floor Plan</button>
+        </div>
+        <input class="filter search" type="text" id="roomSearch" placeholder="Search room, service, therapist...">
+      </div>
+      <div class="toolbar-right">
+        <select class="filter"><option>Serenity Downtown</option><option>West Bay Branch</option></select>
+        <select class="filter"><option>All Zones</option><option>Hammam Zone</option><option>Massage Zone</option><option>Facial Zone</option></select>
+        <select class="filter"><option>All Statuses</option><option>Ready</option><option>Occupied</option><option>Cleaning</option><option>Maintenance</option></select>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi"><span>Total Rooms</span><strong>8</strong><small>Across 4 zones</small></article>
+      <article class="kpi"><span>Ready Now</span><strong>3</strong><small>Available for assignment</small></article>
+      <article class="kpi"><span>Occupied</span><strong>2</strong><small>Sessions in progress</small></article>
+      <article class="kpi"><span>Cleaning</span><strong>1</strong><small>12 minutes remaining</small></article>
+      <article class="kpi"><span>Maintenance</span><strong>1</strong><small>Expected by 04:30 PM</small></article>
+      <article class="kpi"><span>Utilisation</span><strong>72%</strong><small>Today's room usage</small></article>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Live Room Status</h3><p>Real-time room availability, treatment progress, cleaning, and maintenance state.</p></div>
+            <span class="tag">Updated 02:36 PM</span>
+          </div>
+
+          <div class="room-grid" id="roomGrid">
+            <article class="room-card" data-search="R01 Moroccan Hammam occupied Aisha Patel Sara Malik">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status occupied">Occupied</span><div class="room-code">R01</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Moroccan Hammam</strong><span>Hammam Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Guest</span><strong>Sara Malik</strong></div><div><span>Therapist</span><strong>Aisha Patel</strong></div>
+                  <div><span>Service</span><strong>Moroccan Bath</strong></div><div><span>Remaining</span><strong>38 Minutes</strong></div>
+                </div>
+                <div class="progress"><i style="width:58%"></i></div>
+                <div class="room-actions"><button>View Session</button><button>More</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R02 Facial Suite ready Maya Khan">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status ready">Ready</span><div class="room-code">R02</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Facial Suite</strong><span>Facial Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Next Booking</span><strong>03:00 PM</strong></div><div><span>Therapist</span><strong>Maya Khan</strong></div>
+                  <div><span>Last Cleaned</span><strong>02:12 PM</strong></div><div><span>Readiness</span><strong>100%</strong></div>
+                </div>
+                <div class="progress"><i style="width:100%"></i></div>
+                <div class="room-actions"><button>Assign Room</button><button>Inspect</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R03 Hydration Facial ready Facial Zone">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status ready">Ready</span><div class="room-code">R03</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Hydration Facial Room</strong><span>Facial Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Next Booking</span><strong>03:30 PM</strong></div><div><span>Therapist</span><strong>Maya Khan</strong></div>
+                  <div><span>Last Cleaned</span><strong>01:50 PM</strong></div><div><span>Readiness</span><strong>96%</strong></div>
+                </div>
+                <div class="progress"><i style="width:96%"></i></div>
+                <div class="room-actions"><button>Assign Room</button><button>Inspect</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R04 Luxury Hammam occupied Noor Ahmed Fatima Al Nuaimi">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status occupied">Occupied</span><div class="room-code">R04</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Luxury Hammam</strong><span>Hammam Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Guest</span><strong>Fatima Al Nuaimi</strong></div><div><span>Therapist</span><strong>Noor Ahmed</strong></div>
+                  <div><span>Service</span><strong>Luxury Hammam</strong></div><div><span>Remaining</span><strong>25 Minutes</strong></div>
+                </div>
+                <div class="progress"><i style="width:74%"></i></div>
+                <div class="room-actions"><button>View Session</button><button>More</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R05 Body Treatment cleaning housekeeping">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status cleaning">Cleaning</span><div class="room-code">R05</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Body Treatment Room</strong><span>Massage Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Housekeeper</span><strong>Meera Das</strong></div><div><span>Progress</span><strong>65%</strong></div>
+                  <div><span>Started</span><strong>02:22 PM</strong></div><div><span>Ready By</span><strong>02:48 PM</strong></div>
+                </div>
+                <div class="progress"><i style="width:65%"></i></div>
+                <div class="room-actions"><button>Track Cleaning</button><button>Checklist</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R06 Massage Room maintenance HVAC temperature issue">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1556760544-74068565f05c?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status maintenance">Maintenance</span><div class="room-code">R06</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Deep Tissue Room</strong><span>Massage Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Issue</span><strong>HVAC Temperature</strong></div><div><span>Technician</span><strong>Faisal M.</strong></div>
+                  <div><span>Ticket</span><strong>MT-24071</strong></div><div><span>ETA</span><strong>04:30 PM</strong></div>
+                </div>
+                <div class="progress"><i style="width:42%"></i></div>
+                <div class="room-actions"><button>View Ticket</button><button>Block Room</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R07 Massage Room ready Lina Salim">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1571902943202-507ec2618e8f?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status ready">Ready</span><div class="room-code">R07</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Massage Room</strong><span>Massage Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Next Booking</span><strong>04:00 PM</strong></div><div><span>Therapist</span><strong>Lina Salim</strong></div>
+                  <div><span>Last Cleaned</span><strong>02:08 PM</strong></div><div><span>Readiness</span><strong>100%</strong></div>
+                </div>
+                <div class="progress"><i style="width:100%"></i></div>
+                <div class="room-actions"><button>Assign Room</button><button>Inspect</button></div>
+              </div>
+            </article>
+
+            <article class="room-card" data-search="R08 Couple Suite blocked VIP setup Sofia Rahman">
+              <div class="room-image" style="background-image:url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=85')">
+                <span class="room-status blocked">Blocked</span><div class="room-code">R08</div>
+              </div>
+              <div class="room-body">
+                <div class="room-title"><strong>Couple Treatment Suite</strong><span>VIP Zone</span></div>
+                <div class="room-meta">
+                  <div><span>Reason</span><strong>VIP Setup</strong></div><div><span>Assigned To</span><strong>Sofia Rahman</strong></div>
+                  <div><span>Booking</span><strong>05:00 PM</strong></div><div><span>Release At</span><strong>04:30 PM</strong></div>
+                </div>
+                <div class="progress"><i style="width:82%"></i></div>
+                <div class="room-actions"><button>View Setup</button><button>Release</button></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Status Board</h3><p>Rooms grouped by current operational state for fast supervisor action.</p></div>
+            <span class="tag">Live Operations</span>
+          </div>
+
+          <div class="status-board">
+            <div class="status-column"><h4 style="color:var(--green)">Ready</h4><small>3 rooms available</small><div class="status-list"><div class="status-item"><strong>R02 • Facial Suite</strong><span>Next booking 03:00 PM</span></div><div class="status-item"><strong>R03 • Hydration Facial</strong><span>Next booking 03:30 PM</span></div><div class="status-item"><strong>R07 • Massage Room</strong><span>Next booking 04:00 PM</span></div></div></div>
+            <div class="status-column"><h4 style="color:var(--gold)">Occupied</h4><small>2 sessions active</small><div class="status-list"><div class="status-item"><strong>R01 • Moroccan Hammam</strong><span>38 minutes remaining</span></div><div class="status-item"><strong>R04 • Luxury Hammam</strong><span>25 minutes remaining</span></div></div></div>
+            <div class="status-column"><h4 style="color:var(--blue)">Cleaning</h4><small>1 room in turnover</small><div class="status-list"><div class="status-item"><strong>R05 • Body Treatment</strong><span>Ready by 02:48 PM</span></div></div></div>
+            <div class="status-column"><h4 style="color:var(--red)">Unavailable</h4><small>2 rooms restricted</small><div class="status-list"><div class="status-item"><strong>R06 • Maintenance</strong><span>HVAC issue • ETA 04:30 PM</span></div><div class="status-item"><strong>R08 • VIP Block</strong><span>Release at 04:30 PM</span></div></div></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Recent Inspections</h3><p>Room readiness, safety, hygiene, equipment, and consumables checks.</p></div>
+          </div>
+          <div class="inspection-list">
+            <article class="inspection"><div class="row-top"><strong>R02 • Pre-Service Readiness</strong><span>02:12 PM</span></div><p>Passed by Meera Das. Linen, lighting, facial machine, temperature, and consumables confirmed.</p></article>
+            <article class="inspection"><div class="row-top"><strong>R04 • Hammam Safety Check</strong><span>01:38 PM</span></div><p>Passed by Supervisor Riya Shah. Steam pressure, floor drainage, aromatherapy supplies, and emergency call verified.</p></article>
+            <article class="inspection"><div class="row-top"><strong>R06 • Technical Inspection</strong><span>01:15 PM</span></div><p>Failed due to unstable HVAC temperature. Room automatically removed from booking availability.</p></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Maintenance & Equipment</h3><p>Open issues, equipment health, calibration, and upcoming preventive work.</p></div>
+          </div>
+          <div class="maintenance-list">
+            <article class="maintenance-row"><div class="row-top"><strong>MT-24071 • R06 HVAC</strong><span>In Progress</span></div><p>Temperature not maintaining the configured range of 22–24°C. Assigned to Faisal M.</p></article>
+            <article class="maintenance-row"><div class="row-top"><strong>Facial Steamer Calibration</strong><span>Due 23 Jul</span></div><p>Preventive calibration for R02 and R03 facial steam equipment.</p></article>
+            <article class="maintenance-row"><div class="row-top"><strong>Hammam Drain Inspection</strong><span>Due 25 Jul</span></div><p>Monthly drainage and anti-slip floor inspection for R01 and R04.</p></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Facility Operations</small>
+            <h3>Room Readiness</h3>
+          </div>
+          <div class="summary-body">
+            <div class="live-box"><span>Ready for Immediate Use</span><strong>3 Rooms</strong></div>
+            <div class="summary-row"><span>Total Rooms</span><strong>8</strong></div>
+            <div class="summary-row"><span>Occupied</span><strong>2</strong></div>
+            <div class="summary-row"><span>Cleaning</span><strong>1</strong></div>
+            <div class="summary-row"><span>Maintenance</span><strong>1</strong></div>
+            <div class="summary-row"><span>Blocked</span><strong>1</strong></div>
+            <div class="summary-row"><span>Average Turnover</span><strong>18 Minutes</strong></div>
+            <div class="actions">
+              <button class="primary-action" id="autoAssignBtn">Auto-Assign Available Room</button>
+              <button class="secondary-action" id="housekeepingBtn">Dispatch Housekeeping</button>
+              <button class="secondary-action" id="maintenanceBtn">Create Maintenance Ticket</button>
+              <button class="secondary-action" id="blockBtn">Block / Release Room</button>
+              <button class="secondary-action" id="checklistBtn">Open Readiness Checklist</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Operational Alerts</h3><p>Issues requiring supervisor attention.</p></div></div>
+          <div class="alert-list">
+            <article class="alert"><strong>R06 Unavailable</strong><p>Two upcoming massage bookings require reassignment before 04:00 PM.</p></article>
+            <article class="alert"><strong>R05 Turnover Delay Risk</strong><p>Cleaning must finish by 02:48 PM to protect the 03:00 PM walk-in window.</p></article>
+            <article class="alert"><strong>Low Consumable Stock</strong><p>R04 has only two premium argan oil kits remaining.</p></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Next Room Release</h3><p>Upcoming availability based on live sessions.</p></div></div>
+          <div class="inspection-list">
+            <article class="inspection"><div class="row-top"><strong>R04 • Luxury Hammam</strong><span>03:00 PM</span></div><p>Estimated ready after 18-minute housekeeping turnover.</p></article>
+            <article class="inspection"><div class="row-top"><strong>R01 • Moroccan Hammam</strong><span>03:18 PM</span></div><p>Estimated ready after 22-minute deep cleaning.</p></article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Room status last synchronized at 02:36 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+  const roomSearch=document.getElementById("roomSearch");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".segment").forEach(button=>{
+    button.addEventListener("click",()=>{
+      document.querySelectorAll(".segment").forEach(item=>item.classList.remove("active-segment"));
+      button.classList.add("active-segment");
+      showToast(button.textContent+" view selected.");
+    });
+  });
+
+  roomSearch.addEventListener("input",()=>{
+    const value=roomSearch.value.toLowerCase();
+    document.querySelectorAll(".room-card").forEach(card=>{
+      card.style.display=card.dataset.search.toLowerCase().includes(value)?"block":"none";
+    });
+  });
+
+  document.querySelectorAll(".room-actions button").forEach(button=>{
+    button.addEventListener("click",()=>showToast(button.textContent+" workflow opened."));
+  });
+
+  document.getElementById("inspectionBtn").addEventListener("click",()=>showToast("Room inspection checklist opened."));
+  document.getElementById("exportBtn").addEventListener("click",()=>showToast("Room status export prepared."));
+  document.getElementById("addRoomBtn").addEventListener("click",()=>showToast("New room setup opened."));
+  document.getElementById("autoAssignBtn").addEventListener("click",()=>showToast("Best available room assigned using service, zone, and readiness rules."));
+  document.getElementById("housekeepingBtn").addEventListener("click",()=>showToast("Housekeeping dispatch opened."));
+  document.getElementById("maintenanceBtn").addEventListener("click",()=>showToast("Maintenance ticket form opened."));
+  document.getElementById("blockBtn").addEventListener("click",()=>showToast("Room block and release controls opened."));
+  document.getElementById("checklistBtn").addEventListener("click",()=>showToast("Room readiness checklist opened."));
+</script>
+</body>
+</html>

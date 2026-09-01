@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Therapist Schedule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .toolbar{
+      display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap;
+      padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border);margin-bottom:15px
+    }
+    .toolbar-left,.toolbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .segmented{display:flex;padding:4px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+    .segment{
+      min-height:34px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#888b83;font-size:.64rem;cursor:pointer
+    }
+    .segment.active-segment{background:rgba(216,184,117,.1);color:#ecd69f}
+    .date-nav{display:flex;align-items:center;gap:8px}
+    .date-label{min-width:190px;text-align:center;font-size:.72rem;font-weight:700}
+    .filter{
+      min-height:38px;padding:0 11px;border-radius:11px;border:1px solid var(--border);
+      background:rgba(255,255,255,.035);color:#c4c6bf;outline:none;font-size:.64rem
+    }
+    .filter option{background:#171813}
+    .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:15px}
+    .kpi{
+      padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border)
+    }
+    .kpi span{display:block;color:#777a73;font-size:.58rem;text-transform:uppercase}
+    .kpi strong{display:block;margin-top:7px;font-size:1.05rem;color:#ecd59f}
+    .kpi small{display:block;margin-top:5px;color:#858880;font-size:.58rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+    .section-head h3{font-size:.95rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.67rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.59rem;font-weight:700}
+    .schedule-wrap{overflow:auto}
+    .schedule{
+      min-width:1040px;display:grid;grid-template-columns:90px repeat(5,1fr);
+      border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden
+    }
+    .cell{
+      min-height:64px;padding:8px;border-right:1px solid rgba(255,255,255,.055);
+      border-bottom:1px solid rgba(255,255,255,.055);position:relative;background:rgba(255,255,255,.015)
+    }
+    .head-cell{min-height:82px;background:rgba(255,255,255,.035)}
+    .head-cell:last-child,.cell:nth-child(6n){border-right:0}
+    .time-cell{display:flex;align-items:flex-start;justify-content:center;color:#71746c;font-size:.6rem;background:rgba(0,0,0,.12)}
+    .therapist-head{display:flex;gap:9px;align-items:center}
+    .therapist-avatar{
+      width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+      background:linear-gradient(135deg,rgba(216,184,117,.32),rgba(182,140,70,.18));color:#e9cf97;font-size:.63rem;font-weight:800
+    }
+    .therapist-head strong{display:block;font-size:.67rem}.therapist-head span{display:block;margin-top:3px;color:#777a73;font-size:.56rem}
+    .load{
+      margin-top:7px;height:5px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden
+    }
+    .load i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .appointment{
+      position:absolute;inset:5px;border-radius:10px;padding:8px;border:1px solid transparent;cursor:pointer;overflow:hidden
+    }
+    .appointment strong{display:block;font-size:.61rem}.appointment span{display:block;margin-top:3px;font-size:.54rem;opacity:.8}
+    .appointment small{display:block;margin-top:4px;font-size:.53rem;opacity:.75}
+    .appt-gold{background:rgba(216,184,117,.1);border-color:rgba(216,184,117,.2);color:#ead39e}
+    .appt-blue{background:rgba(126,166,219,.09);border-color:rgba(126,166,219,.18);color:#a9c5e8}
+    .appt-green{background:rgba(131,201,142,.08);border-color:rgba(131,201,142,.17);color:#a8dfb0}
+    .appt-purple{background:rgba(177,139,216,.09);border-color:rgba(177,139,216,.18);color:#d0afea}
+    .break{background:rgba(255,255,255,.035);border-color:rgba(255,255,255,.06);color:#8d9088}
+    .leave{background:rgba(231,126,126,.06);border-color:rgba(231,126,126,.14);color:#e39a9a}
+    .available-slot{
+      position:absolute;inset:8px;border:1px dashed rgba(131,201,142,.2);border-radius:9px;
+      display:grid;place-items:center;color:#7fad86;font-size:.55rem
+    }
+    .current-line{
+      position:absolute;left:0;right:0;top:50%;height:2px;background:var(--red);box-shadow:0 0 10px rgba(231,126,126,.5);z-index:2
+    }
+    .current-line:before{content:"";position:absolute;left:-4px;top:-4px;width:9px;height:9px;border-radius:50%;background:var(--red)}
+    .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:13px;color:#7d8078;font-size:.58rem}
+    .legend span{display:flex;align-items:center;gap:6px}.legend i{width:8px;height:8px;border-radius:50%}
+    .therapist-list{display:grid;gap:9px}
+    .therapist-card{
+      padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .therapist-top{display:flex;justify-content:space-between;gap:10px;align-items:center}
+    .therapist-person{display:flex;gap:9px;align-items:center}
+    .mini-avatar{
+      width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+      background:rgba(216,184,117,.08);color:#e2ca95;font-size:.6rem;font-weight:800
+    }
+    .therapist-person strong{display:block;font-size:.66rem}.therapist-person span{display:block;margin-top:3px;color:#74776f;font-size:.57rem}
+    .state{padding:5px 8px;border-radius:999px;font-size:.55rem;font-weight:700}
+    .busy{color:var(--orange);background:rgba(227,164,93,.08)}
+    .available{color:var(--green);background:rgba(131,201,142,.08)}
+    .off{color:var(--red);background:rgba(231,126,126,.07)}
+    .therapist-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+    .therapist-meta div{padding:8px;border-radius:10px;background:rgba(0,0,0,.12)}
+    .therapist-meta span{display:block;color:#6f726a;font-size:.52rem;text-transform:uppercase}
+    .therapist-meta strong{display:block;margin-top:4px;font-size:.58rem}
+    .alert-list{display:grid;gap:8px}
+    .alert{
+      padding:11px;border-radius:13px;background:rgba(227,164,93,.05);border:1px solid rgba(227,164,93,.1)
+    }
+    .alert strong{font-size:.64rem;color:#e2b47d}.alert p{margin-top:5px;color:#969990;font-size:.58rem;line-height:1.45}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:145px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.12),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.58rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.3rem}
+    .summary-body{padding:17px}
+    .live-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(131,201,142,.05);
+      border:1px solid rgba(131,201,142,.11)
+    }
+    .live-box span{color:#777a73;font-size:.61rem}.live-box strong{display:block;margin-top:6px;color:var(--green);font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.66rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action{min-height:44px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1240px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .kpi-grid{grid-template-columns:repeat(2,1fr)}.side-stack{grid-template-columns:1fr}
+      .date-label{min-width:140px}
+    }
+    @media(max-width:480px){.kpi-grid{grid-template-columns:1fr}.footer{flex-direction:column}.toolbar{align-items:flex-start}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Operations</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Therapist Schedule</span><b class="badge">5</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8h4M19 6v4"/></svg><span>Therapist Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Resource Assignment</span></a>
+    </nav>
+
+    <div class="nav-label">Planning</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Reservation Calendar</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span>Leave & Roster</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Today's Coverage</small><strong>5 Therapists Active</strong><span>Serenity Downtown • 78% booked</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Therapist Schedule</h1><p>Plan daily capacity, balance workloads, manage breaks, resolve conflicts, and assign treatments.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="printBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 9V3h12v6M6 18h12v3H6z"/><path d="M4 9h16v9H4z"/></svg>Print Roster</button>
+        <button class="outline-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export</button>
+        <button class="primary-btn" id="assignBtn">+ Assign Booking</button>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="segmented">
+          <button class="segment active-segment">Day</button>
+          <button class="segment">Week</button>
+          <button class="segment">Roster</button>
+        </div>
+        <div class="date-nav">
+          <button class="icon-btn" id="prevBtn">‹</button>
+          <div class="date-label">Monday, 20 July 2026</div>
+          <button class="icon-btn" id="nextBtn">›</button>
+        </div>
+        <button class="outline-btn" id="todayBtn">Today</button>
+      </div>
+
+      <div class="toolbar-right">
+        <select class="filter"><option>Serenity Downtown</option><option>West Bay Branch</option></select>
+        <select class="filter"><option>All Specialities</option><option>Massage</option><option>Hammam</option><option>Facial</option></select>
+        <select class="filter"><option>All Statuses</option><option>Available</option><option>Busy</option><option>On Leave</option></select>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi"><span>Active Therapists</span><strong>5</strong><small>1 on leave</small></article>
+      <article class="kpi"><span>Booked Hours</span><strong>31.5h</strong><small>78% utilisation</small></article>
+      <article class="kpi"><span>Available Slots</span><strong>9</strong><small>Across today</small></article>
+      <article class="kpi"><span>Break Compliance</span><strong>92%</strong><small>1 adjustment needed</small></article>
+      <article class="kpi"><span>Conflicts</span><strong>2</strong><small>Require action</small></article>
+      <article class="kpi"><span>Projected Revenue</span><strong>QAR 8.4K</strong><small>From assigned bookings</small></article>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Daily Therapist Timeline</h3><p>Live schedule from 09:00 AM to 06:00 PM with treatments, breaks, leave, and available slots.</p></div>
+            <span class="tag">Current Time 02:35 PM</span>
+          </div>
+
+          <div class="schedule-wrap">
+            <div class="schedule">
+              <div class="cell head-cell time-cell">Time</div>
+              <div class="cell head-cell">
+                <div class="therapist-head"><div class="therapist-avatar">NA</div><div><strong>Noor Ahmed</strong><span>Hammam • Massage</span></div></div>
+                <div class="load"><i style="width:88%"></i></div>
+              </div>
+              <div class="cell head-cell">
+                <div class="therapist-head"><div class="therapist-avatar">MK</div><div><strong>Maya Khan</strong><span>Facial • Skincare</span></div></div>
+                <div class="load"><i style="width:74%"></i></div>
+              </div>
+              <div class="cell head-cell">
+                <div class="therapist-head"><div class="therapist-avatar">LS</div><div><strong>Lina Salim</strong><span>Massage • Body Care</span></div></div>
+                <div class="load"><i style="width:66%"></i></div>
+              </div>
+              <div class="cell head-cell">
+                <div class="therapist-head"><div class="therapist-avatar">AP</div><div><strong>Aisha Patel</strong><span>Hammam • Facial</span></div></div>
+                <div class="load"><i style="width:81%"></i></div>
+              </div>
+              <div class="cell head-cell">
+                <div class="therapist-head"><div class="therapist-avatar">SR</div><div><strong>Sofia Rahman</strong><span>Massage • Couple Care</span></div></div>
+                <div class="load"><i style="width:58%"></i></div>
+              </div>
+
+              <div class="cell time-cell">09:00</div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Luxury Hammam</strong><span>Amal Jaber</span><small>R04 • 90 min</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Deep Tissue</strong><span>Mariam Ali</span><small>R07 • 60 min</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Hydration Facial</strong><span>Noura Saad</span><small>R03 • 60 min</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+
+              <div class="cell time-cell">10:00</div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Luxury Hammam</strong><span>Amal Jaber</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Brightening Facial</strong><span>Hessa Noor</span><small>R02 • 75 min</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Hydration Facial</strong><span>Noura Saad</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Relaxation Massage</strong><span>Rania Khalid</span><small>R08 • 60 min</small></div></div>
+
+              <div class="cell time-cell">11:00</div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Sports Massage</strong><span>Fatima Nasser</span><small>R06 • 60 min</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Brightening Facial</strong><span>Hessa Noor</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Aromatherapy</strong><span>Leena Omar</span><small>R05 • 75 min</small></div></div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Royal Hammam</strong><span>Salma Issa</span><small>R04 • 90 min</small></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Relaxation Massage</strong><span>Rania Khalid</span><small>Continues</small></div></div>
+
+              <div class="cell time-cell">12:00</div>
+              <div class="cell"><div class="appointment break"><strong>Lunch Break</strong><span>12:00–12:30</span></div></div>
+              <div class="cell"><div class="appointment break"><strong>Lunch Break</strong><span>12:00–12:45</span></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Aromatherapy</strong><span>Leena Omar</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Royal Hammam</strong><span>Salma Issa</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment break"><strong>Lunch Break</strong><span>12:00–12:45</span></div></div>
+
+              <div class="cell time-cell">01:00</div>
+              <div class="cell"><div class="appointment appt-green"><strong>Deep Tissue</strong><span>Hind Ahmad</span><small>R07 • 60 min</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Express Facial</strong><span>Reem Hassan</span><small>R02 • 45 min</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment break"><strong>Lunch Break</strong><span>01:00–01:30</span></div></div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Couple Massage</strong><span>Guest 1</span><small>Suite C1 • 90 min</small></div></div>
+
+              <div class="cell time-cell">02:00</div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Luxury Hammam</strong><span>Fatima Al Nuaimi</span><small>R04 • 90 min</small></div><div class="current-line"></div></div>
+              <div class="cell"><div class="available-slot">Available</div><div class="current-line"></div></div>
+              <div class="cell"><div class="appointment break"><strong>Break</strong><span>02:15–02:45</span></div><div class="current-line"></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Skin Consultation</strong><span>Lulwa Hamad</span><small>Consult 01</small></div><div class="current-line"></div></div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Couple Massage</strong><span>Guest 1</span><small>Continues</small></div><div class="current-line"></div></div>
+
+              <div class="cell time-cell">03:00</div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Luxury Hammam</strong><span>Fatima Al Nuaimi</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Hydration Facial</strong><span>Dalal Omar</span><small>R03 • 60 min</small></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Back Massage</strong><span>Yasmin Ali</span><small>R05 • 45 min</small></div></div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Moroccan Bath</strong><span>Sara Malik</span><small>R01 • 75 min</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+
+              <div class="cell time-cell">04:00</div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Deep Tissue</strong><span>Najla Samir</span><small>R06 • 60 min</small></div></div>
+              <div class="cell"><div class="appointment appt-purple"><strong>Hydration Facial</strong><span>Dalal Omar</span><small>Continues</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment appt-gold"><strong>Moroccan Bath</strong><span>Sara Malik</span><small>Continues</small></div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Swedish Massage</strong><span>Rasha Eid</span><small>R08 • 60 min</small></div></div>
+
+              <div class="cell time-cell">05:00</div>
+              <div class="cell"><div class="appointment appt-blue"><strong>Deep Tissue</strong><span>Najla Samir</span><small>Continues</small></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment leave"><strong>Early Leave</strong><span>From 05:00 PM</span></div></div>
+              <div class="cell"><div class="available-slot">Available</div></div>
+              <div class="cell"><div class="appointment appt-green"><strong>Swedish Massage</strong><span>Rasha Eid</span><small>Continues</small></div></div>
+            </div>
+          </div>
+
+          <div class="legend">
+            <span><i style="background:var(--gold)"></i>Hammam</span>
+            <span><i style="background:var(--blue)"></i>Massage</span>
+            <span><i style="background:var(--purple)"></i>Facial</span>
+            <span><i style="background:var(--green)"></i>Body Care</span>
+            <span><i style="background:#777"></i>Break</span>
+            <span><i style="background:var(--red)"></i>Leave / Conflict</span>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Therapist Workload Overview</h3><p>Track assigned hours, revenue, breaks, and capacity balance.</p></div>
+            <span class="tag">Balanced by System</span>
+          </div>
+
+          <div class="therapist-list">
+            <article class="therapist-card">
+              <div class="therapist-top">
+                <div class="therapist-person"><div class="mini-avatar">NA</div><div><strong>Noor Ahmed</strong><span>Hammam & Massage Specialist</span></div></div>
+                <span class="state busy">88% Booked</span>
+              </div>
+              <div class="therapist-meta"><div><span>Booked</span><strong>7.0 Hours</strong></div><div><span>Revenue</span><strong>QAR 2,650</strong></div><div><span>Break</span><strong>30 Minutes</strong></div></div>
+            </article>
+
+            <article class="therapist-card">
+              <div class="therapist-top">
+                <div class="therapist-person"><div class="mini-avatar">MK</div><div><strong>Maya Khan</strong><span>Facial & Skincare Specialist</span></div></div>
+                <span class="state available">2 Slots Open</span>
+              </div>
+              <div class="therapist-meta"><div><span>Booked</span><strong>5.5 Hours</strong></div><div><span>Revenue</span><strong>QAR 1,760</strong></div><div><span>Break</span><strong>45 Minutes</strong></div></div>
+            </article>
+
+            <article class="therapist-card">
+              <div class="therapist-top">
+                <div class="therapist-person"><div class="mini-avatar">LS</div><div><strong>Lina Salim</strong><span>Massage & Body Care</span></div></div>
+                <span class="state available">3 Slots Open</span>
+              </div>
+              <div class="therapist-meta"><div><span>Booked</span><strong>4.8 Hours</strong></div><div><span>Revenue</span><strong>QAR 1,340</strong></div><div><span>Break</span><strong>30 Minutes</strong></div></div>
+            </article>
+
+            <article class="therapist-card">
+              <div class="therapist-top">
+                <div class="therapist-person"><div class="mini-avatar">AP</div><div><strong>Aisha Patel</strong><span>Hammam & Facial Specialist</span></div></div>
+                <span class="state busy">81% Booked</span>
+              </div>
+              <div class="therapist-meta"><div><span>Booked</span><strong>6.5 Hours</strong></div><div><span>Revenue</span><strong>QAR 1,980</strong></div><div><span>Break</span><strong>30 Minutes</strong></div></div>
+            </article>
+
+            <article class="therapist-card">
+              <div class="therapist-top">
+                <div class="therapist-person"><div class="mini-avatar">SR</div><div><strong>Sofia Rahman</strong><span>Massage & Couple Care</span></div></div>
+                <span class="state available">2 Slots Open</span>
+              </div>
+              <div class="therapist-meta"><div><span>Booked</span><strong>4.6 Hours</strong></div><div><span>Revenue</span><strong>QAR 1,420</strong></div><div><span>Break</span><strong>45 Minutes</strong></div></div>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Today's Operations</small>
+            <h3>Therapist Coverage</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="live-box"><span>Current Utilisation</span><strong>78%</strong></div>
+            <div class="summary-row"><span>Active Therapists</span><strong>5</strong></div>
+            <div class="summary-row"><span>Bookings Assigned</span><strong>24</strong></div>
+            <div class="summary-row"><span>Available Slots</span><strong>9</strong></div>
+            <div class="summary-row"><span>Breaks Scheduled</span><strong>5</strong></div>
+            <div class="summary-row"><span>Leave / Absence</span><strong>1</strong></div>
+            <div class="actions">
+              <button class="primary-action" id="autoAssignBtn">Auto-Assign Pending Bookings</button>
+              <button class="secondary-action" id="balanceBtn">Balance Workloads</button>
+              <button class="secondary-action" id="breakBtn">Manage Breaks</button>
+              <button class="secondary-action" id="leaveBtn">Record Leave</button>
+              <button class="secondary-action" id="notifyBtn">Notify Therapists</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Schedule Alerts</h3><p>Issues requiring supervisor action.</p></div></div>
+          <div class="alert-list">
+            <article class="alert"><strong>Turnover Buffer Risk</strong><p>Noor Ahmed has only 10 minutes between the 03:30 PM Hammam and 05:00 PM Deep Tissue booking.</p></article>
+            <article class="alert"><strong>Break Compliance</strong><p>Aisha Patel's lunch break is below the recommended 45 minutes for today's workload.</p></article>
+            <article class="alert"><strong>Early Leave Coverage</strong><p>Lina Salim leaves at 05:00 PM. One walk-in slot should be redirected to Sofia Rahman.</p></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Currently Available</h3><p>Therapists who can accept an immediate booking.</p></div></div>
+          <div class="therapist-list">
+            <article class="therapist-card">
+              <div class="therapist-top"><div class="therapist-person"><div class="mini-avatar">MK</div><div><strong>Maya Khan</strong><span>Available until 03:00 PM</span></div></div><span class="state available">Ready</span></div>
+            </article>
+            <article class="therapist-card">
+              <div class="therapist-top"><div class="therapist-person"><div class="mini-avatar">LS</div><div><strong>Lina Salim</strong><span>Available after 02:45 PM</span></div></div><span class="state available">Soon</span></div>
+            </article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Schedule last synchronized at 02:34 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".segment").forEach(button=>{
+    button.addEventListener("click",()=>{
+      document.querySelectorAll(".segment").forEach(item=>item.classList.remove("active-segment"));
+      button.classList.add("active-segment");
+      showToast(button.textContent+" schedule view selected.");
+    });
+  });
+
+  document.querySelectorAll(".appointment").forEach(item=>{
+    item.addEventListener("click",()=>showToast("Appointment details and reassignment options opened."));
+  });
+
+  document.querySelectorAll(".available-slot").forEach(item=>{
+    item.addEventListener("click",()=>showToast("Available slot selected for a new booking."));
+  });
+
+  document.getElementById("prevBtn").addEventListener("click",()=>showToast("Previous schedule loaded."));
+  document.getElementById("nextBtn").addEventListener("click",()=>showToast("Next schedule loaded."));
+  document.getElementById("todayBtn").addEventListener("click",()=>showToast("Returned to today's schedule."));
+  document.getElementById("printBtn").addEventListener("click",()=>showToast("Therapist roster sent to the printer."));
+  document.getElementById("exportBtn").addEventListener("click",()=>showToast("Schedule export prepared."));
+  document.getElementById("assignBtn").addEventListener("click",()=>showToast("Booking assignment workflow opened."));
+  document.getElementById("autoAssignBtn").addEventListener("click",()=>showToast("Pending bookings auto-assigned using skills and availability."));
+  document.getElementById("balanceBtn").addEventListener("click",()=>showToast("Workload balancing recommendations generated."));
+  document.getElementById("breakBtn").addEventListener("click",()=>showToast("Break management opened."));
+  document.getElementById("leaveBtn").addEventListener("click",()=>showToast("Leave and roster adjustment opened."));
+  document.getElementById("notifyBtn").addEventListener("click",()=>showToast("Schedule updates sent to all therapists."));
+</script>
+</body>
+</html>

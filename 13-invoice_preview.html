@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Invoice Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8;
+      --paper:#fbfaf6;--ink:#24251f;--paper-muted:#73756d;--paper-line:#e7e1d6
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px;align-items:start}
+    .invoice-wrap{display:flex;justify-content:center}
+    .invoice{
+      width:min(100%,900px);background:var(--paper);color:var(--ink);border-radius:22px;
+      box-shadow:0 30px 70px rgba(0,0,0,.35);overflow:hidden
+    }
+    .invoice-top{
+      padding:34px 38px 28px;background:
+        linear-gradient(135deg,rgba(216,184,117,.13),rgba(255,255,255,.82)),
+        var(--paper);
+      border-bottom:1px solid var(--paper-line)
+    }
+    .invoice-head{display:flex;justify-content:space-between;gap:28px;align-items:flex-start}
+    .brand{display:flex;gap:13px;align-items:center}
+    .brand-mark{
+      width:52px;height:52px;border-radius:15px;display:grid;place-items:center;
+      background:linear-gradient(135deg,#e4c986,#b58c49);color:#191812
+    }
+    .brand-mark svg{width:28px;height:28px;stroke:currentColor}
+    .brand h2{font-family:"Playfair Display",serif;font-size:1.35rem}
+    .brand p{margin-top:4px;color:var(--paper-muted);font-size:.68rem;line-height:1.5}
+    .invoice-id{text-align:right}
+    .invoice-id small{color:#9a7d43;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+    .invoice-id h1{margin-top:7px;font-family:"Playfair Display",serif;font-size:1.75rem}
+    .invoice-id span{
+      display:inline-flex;margin-top:10px;padding:7px 10px;border-radius:999px;
+      background:#e9f5ea;color:#4f8d58;font-size:.62rem;font-weight:800
+    }
+    .invoice-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px}
+    .invoice-meta div{padding:12px;border-radius:12px;background:rgba(255,255,255,.72);border:1px solid #ebe5da}
+    .invoice-meta span{display:block;color:#8b8d84;font-size:.58rem;text-transform:uppercase}
+    .invoice-meta strong{display:block;margin-top:5px;font-size:.69rem}
+    .invoice-body{padding:30px 38px 34px}
+    .party-grid{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-bottom:28px}
+    .party small{color:#9a7d43;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;font-weight:800}
+    .party h3{margin-top:7px;font-size:.9rem}
+    .party p{margin-top:6px;color:var(--paper-muted);font-size:.66rem;line-height:1.6}
+    .line-table{width:100%;border-collapse:collapse}
+    .line-table th,.line-table td{padding:12px 9px;border-bottom:1px solid var(--paper-line);font-size:.66rem;text-align:left}
+    .line-table th{color:#8a8c83;font-size:.58rem;text-transform:uppercase;letter-spacing:.05em}
+    .line-table td:nth-last-child(-n+2),.line-table th:nth-last-child(-n+2){text-align:right}
+    .line-name strong{display:block;font-size:.69rem}.line-name span{display:block;margin-top:4px;color:#8a8c83;font-size:.59rem}
+    .summary-grid{display:grid;grid-template-columns:1fr 300px;gap:30px;margin-top:26px}
+    .notes{
+      padding:16px;border-radius:14px;background:#f6f2ea;border:1px solid #e9e1d3
+    }
+    .notes strong{font-size:.69rem}.notes p{margin-top:7px;color:var(--paper-muted);font-size:.62rem;line-height:1.6}
+    .total-box{padding:16px;border-radius:14px;background:#272821;color:white}
+    .total-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;font-size:.65rem;color:#c5c7bf}
+    .total-row.grand{margin-top:8px;padding-top:13px;border-top:1px solid rgba(255,255,255,.11);font-size:.92rem;color:#f0d79c;font-weight:800}
+    .total-row.balance{color:#f1bd77;font-weight:700}
+    .payment-panel{
+      display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px;padding:16px;border-radius:14px;
+      background:#f8f5ef;border:1px solid var(--paper-line)
+    }
+    .payment-item span{display:block;color:#8a8c83;font-size:.58rem;text-transform:uppercase}
+    .payment-item strong{display:block;margin-top:5px;font-size:.68rem}
+    .invoice-footer{
+      display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin-top:28px;padding-top:22px;border-top:1px dashed #d7d0c4
+    }
+    .footer-copy p{color:var(--paper-muted);font-size:.6rem;line-height:1.6}
+    .footer-copy strong{display:block;margin-bottom:5px;font-size:.69rem}
+    .qr{
+      width:96px;height:96px;padding:8px;border-radius:12px;background:white;border:1px solid #ddd6ca;
+      display:grid;grid-template-columns:repeat(7,1fr);gap:2px
+    }
+    .qr i{background:#22231e}.qr i.light{background:transparent}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .card{
+      border-radius:19px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .side-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+    .section-head h3{font-size:.92rem}.section-head span{color:#74776f;font-size:.62rem}
+    .summary-row-dark{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.67rem
+    }
+    .summary-row-dark span{color:#7f827b}.summary-row-dark strong{text-align:right;color:#d4d4cc}
+    .delivery-grid{display:grid;gap:8px}
+    .delivery{
+      display:flex;align-items:center;gap:10px;padding:11px;border-radius:13px;
+      background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05);cursor:pointer
+    }
+    .delivery input{width:17px;height:17px;accent-color:#c9a75d}
+    .delivery strong{font-size:.66rem}.delivery span{display:block;margin-top:3px;color:#767970;font-size:.58rem}
+    .actions{display:grid;gap:8px}
+    .primary-action,.secondary-action,.danger-action{min-height:45px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .danger-action{border:1px solid rgba(231,126,126,.16);background:rgba(231,126,126,.05);color:#e89b9b}
+    .activity{padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .activity + .activity{margin-top:8px}
+    .activity-top{display:flex;justify-content:space-between;gap:10px}
+    .activity strong{font-size:.65rem}.activity span{color:#72756d;font-size:.57rem}
+    .activity p{margin-top:4px;color:#858880;font-size:.59rem;line-height:1.4}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1250px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .invoice-top,.invoice-body{padding:24px 20px}.invoice-head,.party-grid,.summary-grid,.invoice-footer{grid-template-columns:1fr;display:grid}
+      .invoice-id{text-align:left}.invoice-meta{grid-template-columns:repeat(2,1fr)}.payment-panel{grid-template-columns:1fr}
+      .side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.invoice-meta{grid-template-columns:1fr}.footer{flex-direction:column}}
+    @media print{
+      body{background:white}.sidebar,.topbar,.side-stack,.footer,.toast{display:none!important}
+      .app,.main,.layout{display:block;padding:0}.invoice{width:100%;box-shadow:none;border-radius:0}
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Guest Journey</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Service Session</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>POS Billing</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Invoice Preview</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Payment History</span></a>
+    </nav>
+
+    <div class="nav-label">Finance</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg><span>Daily Collection</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V5M9 19V9M14 19V12M19 19V3"/></svg><span>Sales Reports</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Invoice Status</small><strong>INV-260720-018</strong><span>Paid • Ready for delivery</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Invoice Preview</h1><p>Review the completed invoice, payment details, loyalty credits, and customer delivery options.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="editBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>Edit Invoice</button>
+        <button class="outline-btn" id="downloadBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Download PDF</button>
+        <button class="primary-btn" id="printBtn">Print Invoice</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="invoice-wrap">
+        <article class="invoice">
+          <section class="invoice-top">
+            <div class="invoice-head">
+              <div class="brand">
+                <div class="brand-mark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+                    <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+                  </svg>
+                </div>
+                <div>
+                  <h2>Serenity Downtown Spa</h2>
+                  <p>West Bay, Doha, Qatar<br>+974 4400 2580 • billing@serenityspa.qa</p>
+                </div>
+              </div>
+              <div class="invoice-id">
+                <small>Tax Invoice</small>
+                <h1>INV-260720-018</h1>
+                <span>Paid in Full</span>
+              </div>
+            </div>
+
+            <div class="invoice-meta">
+              <div><span>Invoice Date</span><strong>20 July 2026</strong></div>
+              <div><span>Invoice Time</span><strong>05:14 PM</strong></div>
+              <div><span>Reservation</span><strong>RSV-260720-041</strong></div>
+              <div><span>Cashier</span><strong>Riya Shah</strong></div>
+            </div>
+          </section>
+
+          <section class="invoice-body">
+            <div class="party-grid">
+              <div class="party">
+                <small>Bill From</small>
+                <h3>Serenity Downtown Spa</h3>
+                <p>Thasaamah Wellness Services W.L.L.<br>Commercial Registration: CR-784521<br>Tax Registration: QA-TAX-204581</p>
+              </div>
+              <div class="party">
+                <small>Bill To</small>
+                <h3>Fatima Al Nuaimi</h3>
+                <p>Gold Member • Member ID GM-10248<br>+974 5558 2410<br>fatima@example.com</p>
+              </div>
+            </div>
+
+            <div style="overflow:auto">
+              <table class="line-table">
+                <thead>
+                  <tr><th>Description</th><th>Qty</th><th>Rate</th><th>Discount</th><th>Amount</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="line-name"><strong>Luxury Hammam</strong><span>Therapist: Noor Ahmed • R04</span></td><td>1</td><td>QAR 550.00</td><td>QAR 55.00</td><td>QAR 495.00</td></tr>
+                  <tr><td class="line-name"><strong>Premium Argan Oil Upgrade</strong><span>Added during service session</span></td><td>1</td><td>QAR 80.00</td><td>QAR 8.00</td><td>QAR 72.00</td></tr>
+                  <tr><td class="line-name"><strong>Jasmine Tea Ritual</strong><span>Relaxation lounge service</span></td><td>1</td><td>QAR 45.00</td><td>QAR 4.50</td><td>QAR 40.50</td></tr>
+                  <tr><td class="line-name"><strong>Argan Body Moisturiser</strong><span>Retail product</span></td><td>1</td><td>QAR 95.00</td><td>QAR 9.50</td><td>QAR 85.50</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="summary-grid">
+              <div>
+                <div class="notes">
+                  <strong>Customer Notes</strong>
+                  <p>Gold membership discount applied. Invoice delivered through WhatsApp and email. Product recommended by therapist Noor Ahmed.</p>
+                </div>
+
+                <div class="payment-panel">
+                  <div class="payment-item"><span>Payment Method</span><strong>Card • Terminal 01</strong></div>
+                  <div class="payment-item"><span>Approval Reference</span><strong>AP-835641</strong></div>
+                  <div class="payment-item"><span>Advance Received</span><strong>QAR 200.00</strong></div>
+                  <div class="payment-item"><span>Final Collection</span><strong>QAR 543.00</strong></div>
+                  <div class="payment-item"><span>Tip Allocation</span><strong>QAR 50 • Noor Ahmed</strong></div>
+                  <div class="payment-item"><span>Loyalty Points Earned</span><strong>+743 Points</strong></div>
+                </div>
+              </div>
+
+              <div class="total-box">
+                <div class="total-row"><span>Subtotal</span><strong>QAR 770.00</strong></div>
+                <div class="total-row"><span>Gold Member Discount</span><strong>- QAR 77.00</strong></div>
+                <div class="total-row"><span>Tax</span><strong>QAR 0.00</strong></div>
+                <div class="total-row"><span>Tip</span><strong>QAR 50.00</strong></div>
+                <div class="total-row grand"><span>Grand Total</span><strong>QAR 743.00</strong></div>
+                <div class="total-row"><span>Amount Paid</span><strong>QAR 743.00</strong></div>
+                <div class="total-row balance"><span>Balance Due</span><strong>QAR 0.00</strong></div>
+              </div>
+            </div>
+
+            <div class="invoice-footer">
+              <div class="footer-copy">
+                <strong>Thank you for choosing Serenity Downtown Spa.</strong>
+                <p>This is a system-generated invoice. Services are subject to the spa’s published cancellation, refund, and wellness policies. Verify this invoice using the QR code.</p>
+              </div>
+              <div class="qr" aria-label="Invoice verification QR placeholder">
+                <i></i><i></i><i></i><i class="light"></i><i></i><i></i><i></i>
+                <i></i><i class="light"></i><i></i><i class="light"></i><i></i><i class="light"></i><i></i>
+                <i></i><i></i><i></i><i></i><i class="light"></i><i></i><i></i>
+                <i class="light"></i><i></i><i class="light"></i><i></i><i></i><i class="light"></i><i></i>
+                <i></i><i class="light"></i><i></i><i></i><i class="light"></i><i></i><i class="light"></i>
+                <i></i><i></i><i class="light"></i><i></i><i></i><i class="light"></i><i></i>
+                <i></i><i class="light"></i><i></i><i class="light"></i><i></i><i></i><i></i>
+              </div>
+            </div>
+          </section>
+        </article>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card side-card">
+          <div class="section-head"><h3>Invoice Summary</h3><span>Paid</span></div>
+          <div class="summary-row-dark"><span>Invoice</span><strong>INV-260720-018</strong></div>
+          <div class="summary-row-dark"><span>Customer</span><strong>Fatima Al Nuaimi</strong></div>
+          <div class="summary-row-dark"><span>Grand Total</span><strong>QAR 743.00</strong></div>
+          <div class="summary-row-dark"><span>Paid</span><strong>QAR 743.00</strong></div>
+          <div class="summary-row-dark"><span>Balance</span><strong style="color:var(--green)">QAR 0.00</strong></div>
+        </section>
+
+        <section class="card side-card">
+          <div class="section-head"><h3>Delivery Options</h3><span>2 selected</span></div>
+          <div class="delivery-grid">
+            <label class="delivery"><input type="checkbox" checked><div><strong>WhatsApp</strong><span>+974 5558 2410</span></div></label>
+            <label class="delivery"><input type="checkbox" checked><div><strong>Email</strong><span>fatima@example.com</span></div></label>
+            <label class="delivery"><input type="checkbox"><div><strong>SMS Link</strong><span>Send secure invoice link</span></div></label>
+            <label class="delivery"><input type="checkbox"><div><strong>Printed Copy</strong><span>Reception printer 01</span></div></label>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <div class="section-head"><h3>Invoice Actions</h3><span>Ready</span></div>
+          <div class="actions">
+            <button class="primary-action" id="sendBtn">Send Invoice Now</button>
+            <button class="secondary-action" id="downloadSideBtn">Download PDF</button>
+            <button class="secondary-action" id="duplicateBtn">Print Duplicate Copy</button>
+            <button class="secondary-action" id="receiptBtn">Send Payment Receipt</button>
+            <button class="danger-action" id="cancelBtn">Cancel Invoice</button>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <div class="section-head"><h3>Activity</h3><span>Today</span></div>
+          <article class="activity"><div class="activity-top"><strong>Payment Confirmed</strong><span>05:14 PM</span></div><p>QAR 543 collected through Card Terminal 01.</p></article>
+          <article class="activity"><div class="activity-top"><strong>Invoice Generated</strong><span>05:14 PM</span></div><p>Invoice INV-260720-018 generated by Riya Shah.</p></article>
+          <article class="activity"><div class="activity-top"><strong>Loyalty Updated</strong><span>05:15 PM</span></div><p>743 points credited to Gold Member account GM-10248.</p></article>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Invoice generated on 20 July 2026 at 05:14 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.getElementById("printBtn").addEventListener("click",()=>window.print());
+  document.getElementById("duplicateBtn").addEventListener("click",()=>window.print());
+  document.getElementById("downloadBtn").addEventListener("click",()=>showToast("Invoice PDF prepared for download."));
+  document.getElementById("downloadSideBtn").addEventListener("click",()=>showToast("Invoice PDF prepared for download."));
+  document.getElementById("editBtn").addEventListener("click",()=>showToast("Invoice edit workflow opened."));
+  document.getElementById("sendBtn").addEventListener("click",()=>showToast("Invoice sent through the selected delivery channels."));
+  document.getElementById("receiptBtn").addEventListener("click",()=>showToast("Payment receipt sent to the customer."));
+  document.getElementById("cancelBtn").addEventListener("click",()=>showToast("Invoice cancellation confirmation requested."));
+</script>
+</body>
+</html>

@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | CRM & Follow-Up</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.outline-btn{border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer}
+    .menu-btn{width:42px;height:42px;border-radius:12px;display:none}
+    .menu-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .toolbar{
+      display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+      padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border);margin-bottom:15px
+    }
+    .toolbar-left,.toolbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .filter{
+      min-height:39px;padding:0 11px;border-radius:11px;border:1px solid var(--border);
+      background:rgba(255,255,255,.035);color:#c4c6bf;outline:none;font-size:.64rem
+    }
+    .filter option{background:#171813}.search{min-width:260px}
+    .segmented{display:flex;padding:4px;border-radius:12px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055)}
+    .segment{
+      min-height:34px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#888b83;font-size:.64rem;cursor:pointer
+    }
+    .segment.active-segment{background:rgba(216,184,117,.1);color:#ecd69f}
+    .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:15px}
+    .kpi{
+      padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));
+      border:1px solid var(--border)
+    }
+    .kpi span{display:block;color:#777a73;font-size:.58rem;text-transform:uppercase}
+    .kpi strong{display:block;margin-top:7px;font-size:1.05rem;color:#ecd59f}
+    .kpi small{display:block;margin-top:5px;color:#858880;font-size:.58rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+    .section-head h3{font-size:.95rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.67rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.59rem;font-weight:700}
+    .lead-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+    .lead-card{
+      padding:14px;border-radius:16px;background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.055);transition:.2s
+    }
+    .lead-card:hover{transform:translateY(-2px);border-color:rgba(216,184,117,.18)}
+    .lead-top{display:flex;justify-content:space-between;gap:12px}
+    .lead-person{display:flex;gap:10px;align-items:center}
+    .avatar{
+      width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
+      background:rgba(216,184,117,.08);color:#e4ca92;font-size:.62rem;font-weight:800
+    }
+    .lead-person strong{display:block;font-size:.68rem}.lead-person span{display:block;margin-top:4px;color:#74776f;font-size:.56rem}
+    .state{padding:5px 8px;border-radius:999px;font-size:.54rem;font-weight:700}
+    .hot{color:var(--red);background:rgba(231,126,126,.08)}
+    .warm{color:var(--orange);background:rgba(227,164,93,.08)}
+    .active{color:var(--green);background:rgba(131,201,142,.08)}
+    .follow{color:var(--blue);background:rgba(126,166,219,.08)}
+    .lead-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px}
+    .lead-meta div{padding:8px;border-radius:10px;background:rgba(0,0,0,.12)}
+    .lead-meta span{display:block;color:#6f726a;font-size:.5rem;text-transform:uppercase}
+    .lead-meta strong{display:block;margin-top:4px;font-size:.56rem}
+    .lead-note{margin-top:10px;color:#8c8f87;font-size:.58rem;line-height:1.48}
+    .lead-actions{display:flex;gap:7px;margin-top:11px}
+    .lead-actions button{
+      flex:1;min-height:34px;border-radius:10px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);color:#9ea198;font-size:.56rem;cursor:pointer
+    }
+    .lead-actions button:first-child{color:#e3c98f;border-color:rgba(216,184,117,.13);background:rgba(216,184,117,.05)}
+    .pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+    .pipe-col{
+      padding:12px;border-radius:15px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.055)
+    }
+    .pipe-col h4{font-size:.64rem}.pipe-col small{display:block;margin-top:4px;color:#73766e;font-size:.55rem}
+    .pipe-list{display:grid;gap:7px;margin-top:10px}
+    .pipe-item{padding:9px;border-radius:11px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.04)}
+    .pipe-item strong{display:block;font-size:.59rem}.pipe-item span{display:block;margin-top:4px;color:#74776f;font-size:.53rem}
+    .table-wrap{overflow:auto}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:11px 9px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:.63rem}
+    th{color:#767970;font-size:.56rem;text-transform:uppercase}
+    td{color:#c6c8c0}td strong{display:block;font-size:.66rem}td span{display:block;margin-top:4px;color:#74776f;font-size:.56rem}
+    .pill{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:.54rem;font-weight:700}
+    .pill-call{color:var(--blue);background:rgba(126,166,219,.08)}
+    .pill-whatsapp{color:var(--green);background:rgba(131,201,142,.08)}
+    .pill-email{color:var(--purple);background:rgba(177,139,216,.08)}
+    .pill-overdue{color:var(--red);background:rgba(231,126,126,.08)}
+    .campaign-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .campaign{
+      padding:13px;border-radius:15px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .campaign strong{display:block;font-size:.66rem}.campaign span{display:block;margin-top:4px;color:#74776f;font-size:.55rem}
+    .campaign p{margin-top:7px;color:#888b83;font-size:.58rem;line-height:1.45}
+    .campaign footer{display:flex;justify-content:space-between;gap:10px;margin-top:10px;color:#9ca098;font-size:.55rem}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:150px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.12),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.58rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.3rem}
+    .summary-body{padding:17px}
+    .live-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(216,184,117,.05);
+      border:1px solid rgba(216,184,117,.11)
+    }
+    .live-box span{color:#777a73;font-size:.61rem}.live-box strong{display:block;margin-top:6px;color:#efd79f;font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.66rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action{min-height:44px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .alert-list{display:grid;gap:8px}
+    .alert{
+      padding:11px;border-radius:13px;background:rgba(227,164,93,.05);border:1px solid rgba(227,164,93,.1)
+    }
+    .alert strong{font-size:.63rem;color:#e2b47d}.alert p{margin-top:5px;color:#969990;font-size:.58rem;line-height:1.45}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1240px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+      .pipeline{grid-template-columns:repeat(3,1fr)}.campaign-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .kpi-grid,.lead-grid,.pipeline,.campaign-grid{grid-template-columns:repeat(2,1fr)}.side-stack{grid-template-columns:1fr}.search{min-width:100%}
+      .lead-meta{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:500px){.kpi-grid,.lead-grid,.pipeline,.campaign-grid{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">CRM</div>
+    <nav class="nav">
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8h4M19 6v4"/></svg><span>CRM & Follow-Up</span><b class="badge">38</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Leads & Enquiries</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Follow-Up Tasks</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h5l8-5v10l-8-5H4z"/><path d="M9 12v6"/></svg><span>Campaigns</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Customer Segments</span></a>
+    </nav>
+
+    <div class="nav-label">Performance</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg><span>Conversion Analytics</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg><span>Activity Timeline</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 20h18M5 20V8l7-5 7 5v12"/><path d="M9 20v-6h6v6"/></svg><span>Source Performance</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>CRM Health</small><strong>38 Follow-Ups Due</strong><span>76% conversion forecast</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>CRM & Follow-Up</h1><p>Manage leads, opportunities, customer engagement, reminders, campaigns, conversions, and retention activity.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="campaignBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h5l8-5v10l-8-5H4z"/><path d="M9 12v6"/></svg>New Campaign</button>
+        <button class="outline-btn" id="exportBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Export</button>
+        <button class="primary-btn" id="newLeadBtn">+ New Lead</button>
+      </div>
+    </header>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <div class="segmented">
+          <button class="segment active-segment">Overview</button>
+          <button class="segment">My Follow-Ups</button>
+          <button class="segment">Pipeline</button>
+          <button class="segment">Campaigns</button>
+          <button class="segment">Retention</button>
+        </div>
+        <input class="filter search" id="leadSearch" type="text" placeholder="Search customer, mobile, source, owner...">
+      </div>
+      <div class="toolbar-right">
+        <select class="filter"><option>All Branches</option><option>Serenity Downtown</option><option>West Bay Branch</option></select>
+        <select class="filter"><option>All Owners</option><option>Leena Joseph</option><option>Riya Shah</option><option>Sofia Rahman</option></select>
+        <select class="filter"><option>All Priorities</option><option>Hot</option><option>Warm</option><option>Normal</option></select>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi"><span>Open Leads</span><strong>146</strong><small>28 added this week</small></article>
+      <article class="kpi"><span>Follow-Ups Due</span><strong>38</strong><small>7 overdue</small></article>
+      <article class="kpi"><span>Pipeline Value</span><strong>QAR 428K</strong><small>Weighted value QAR 276K</small></article>
+      <article class="kpi"><span>Conversion Rate</span><strong>31.8%</strong><small>+4.2% vs last month</small></article>
+      <article class="kpi"><span>Campaign Revenue</span><strong>QAR 96K</strong><small>Current month</small></article>
+      <article class="kpi"><span>Retention Recovery</span><strong>64</strong><small>Customers reactivated</small></article>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Priority Follow-Ups</h3><p>High-value enquiries and customers requiring immediate action.</p></div>
+            <span class="tag">38 Due Today</span>
+          </div>
+
+          <div class="lead-grid" id="leadGrid">
+            <article class="lead-card" data-search="Alya Hassan hot instagram couple package Leena Joseph">
+              <div class="lead-top">
+                <div class="lead-person"><div class="avatar">AH</div><div><strong>Alya Hassan</strong><span>Instagram • LEAD-002841</span></div></div>
+                <span class="state hot">Hot Lead</span>
+              </div>
+              <div class="lead-meta"><div><span>Interest</span><strong>Couple Package</strong></div><div><span>Value</span><strong>QAR 1,350</strong></div><div><span>Owner</span><strong>Leena Joseph</strong></div><div><span>Due</span><strong>03:00 PM</strong></div></div>
+              <p class="lead-note">Requested availability for Friday evening. Proposal shared through WhatsApp this morning.</p>
+              <div class="lead-actions"><button>WhatsApp</button><button>Call</button><button>Open Lead</button></div>
+            </article>
+
+            <article class="lead-card" data-search="Mariam Al Suwaidi warm website gold membership Riya Shah">
+              <div class="lead-top">
+                <div class="lead-person"><div class="avatar">MS</div><div><strong>Mariam Al Suwaidi</strong><span>Website • LEAD-002836</span></div></div>
+                <span class="state warm">Warm</span>
+              </div>
+              <div class="lead-meta"><div><span>Interest</span><strong>Gold Membership</strong></div><div><span>Value</span><strong>QAR 899</strong></div><div><span>Owner</span><strong>Riya Shah</strong></div><div><span>Due</span><strong>03:30 PM</strong></div></div>
+              <p class="lead-note">Viewed membership benefits twice and requested details about weekend booking priority.</p>
+              <div class="lead-actions"><button>Send Offer</button><button>Call</button><button>Open Lead</button></div>
+            </article>
+
+            <article class="lead-card" data-search="Fatima Rahman active retention inactive customer Sofia Rahman">
+              <div class="lead-top">
+                <div class="lead-person"><div class="avatar">FR</div><div><strong>Fatima Rahman</strong><span>Retention • CUST-006194</span></div></div>
+                <span class="state active">Reactivation</span>
+              </div>
+              <div class="lead-meta"><div><span>Last Visit</span><strong>94 Days Ago</strong></div><div><span>Lifetime</span><strong>QAR 8,420</strong></div><div><span>Owner</span><strong>Sofia Rahman</strong></div><div><span>Due</span><strong>04:00 PM</strong></div></div>
+              <p class="lead-note">High-value customer with no recent booking. Eligible for complimentary tea ritual reactivation offer.</p>
+              <div class="lead-actions"><button>Send Offer</button><button>WhatsApp</button><button>Open Profile</button></div>
+            </article>
+
+            <article class="lead-card" data-search="Noor Qureshi follow up phone luxury hammam Leena Joseph">
+              <div class="lead-top">
+                <div class="lead-person"><div class="avatar">NQ</div><div><strong>Noor Qureshi</strong><span>Phone • LEAD-002829</span></div></div>
+                <span class="state follow">Follow-Up</span>
+              </div>
+              <div class="lead-meta"><div><span>Interest</span><strong>Luxury Hammam</strong></div><div><span>Value</span><strong>QAR 550</strong></div><div><span>Owner</span><strong>Leena Joseph</strong></div><div><span>Due</span><strong>04:30 PM</strong></div></div>
+              <p class="lead-note">Waiting for preferred therapist confirmation before converting enquiry to reservation.</p>
+              <div class="lead-actions"><button>Call</button><button>Check Slots</button><button>Convert</button></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Sales & Engagement Pipeline</h3><p>Track customer opportunities from enquiry through conversion and retention.</p></div>
+            <span class="tag">QAR 428K Pipeline</span>
+          </div>
+
+          <div class="pipeline">
+            <div class="pipe-col"><h4>New Enquiry</h4><small>46 leads • QAR 88K</small><div class="pipe-list"><div class="pipe-item"><strong>Couple Signature Day</strong><span>12 opportunities</span></div><div class="pipe-item"><strong>Luxury Hammam</strong><span>18 opportunities</span></div></div></div>
+            <div class="pipe-col"><h4>Contacted</h4><small>33 leads • QAR 96K</small><div class="pipe-list"><div class="pipe-item"><strong>Gold Membership</strong><span>9 opportunities</span></div><div class="pipe-item"><strong>Wellness Package</strong><span>11 opportunities</span></div></div></div>
+            <div class="pipe-col"><h4>Qualified</h4><small>27 leads • QAR 114K</small><div class="pipe-list"><div class="pipe-item"><strong>Corporate Wellness</strong><span>4 opportunities</span></div><div class="pipe-item"><strong>Platinum Membership</strong><span>7 opportunities</span></div></div></div>
+            <div class="pipe-col"><h4>Proposal Sent</h4><small>21 leads • QAR 92K</small><div class="pipe-list"><div class="pipe-item"><strong>Couple Package</strong><span>8 proposals</span></div><div class="pipe-item"><strong>Royal Hammam 4</strong><span>6 proposals</span></div></div></div>
+            <div class="pipe-col"><h4>Conversion</h4><small>19 wins • QAR 38K</small><div class="pipe-list"><div class="pipe-item"><strong>Converted Today</strong><span>7 customers</span></div><div class="pipe-item"><strong>Monthly Win Rate</strong><span>31.8%</span></div></div></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Follow-Up Schedule</h3><p>Calls, WhatsApp messages, emails, consultations, and overdue activities.</p></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Time</th><th>Customer</th><th>Activity</th><th>Purpose</th><th>Owner</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>02:30 PM</td><td><strong>Hessa Al Mansoori</strong><span>LEAD-002818</span></td><td><span class="pill pill-overdue">Overdue</span></td><td>Package proposal follow-up</td><td>Riya Shah</td><td>Pending</td></tr>
+                <tr><td>03:00 PM</td><td><strong>Alya Hassan</strong><span>LEAD-002841</span></td><td><span class="pill pill-whatsapp">WhatsApp</span></td><td>Confirm Friday slot</td><td>Leena Joseph</td><td>Due</td></tr>
+                <tr><td>03:30 PM</td><td><strong>Mariam Al Suwaidi</strong><span>LEAD-002836</span></td><td><span class="pill pill-call">Call</span></td><td>Membership consultation</td><td>Riya Shah</td><td>Due</td></tr>
+                <tr><td>04:00 PM</td><td><strong>Fatima Rahman</strong><span>CUST-006194</span></td><td><span class="pill pill-email">Email</span></td><td>Reactivation offer</td><td>Sofia Rahman</td><td>Scheduled</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Campaigns & Segments</h3><p>Engage customers with targeted promotions, reactivation journeys, and personalised offers.</p></div>
+          </div>
+
+          <div class="campaign-grid">
+            <article class="campaign"><strong>Weekend Hammam Upgrade</strong><span>Active Campaign</span><p>Target customers who booked standard Hammam twice in the last 90 days.</p><footer><span>Audience 326</span><span>QAR 28K Revenue</span></footer></article>
+            <article class="campaign"><strong>90-Day Win Back</strong><span>Retention Journey</span><p>Re-engage high-value customers with no completed visit in the last 90 days.</p><footer><span>Audience 184</span><span>22% Reactivated</span></footer></article>
+            <article class="campaign"><strong>Gold Membership Upgrade</strong><span>Membership Campaign</span><p>Promote Gold benefits to frequent non-members spending above QAR 4,000 annually.</p><footer><span>Audience 96</span><span>18 Conversions</span></footer></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>CRM Performance</small>
+            <h3>Customer Engagement</h3>
+          </div>
+          <div class="summary-body">
+            <div class="live-box"><span>Weighted Pipeline Value</span><strong>QAR 276,400</strong></div>
+            <div class="summary-row"><span>Open Leads</span><strong>146</strong></div>
+            <div class="summary-row"><span>Hot Leads</span><strong>22</strong></div>
+            <div class="summary-row"><span>Follow-Ups Today</span><strong>38</strong></div>
+            <div class="summary-row"><span>Overdue Activities</span><strong>7</strong></div>
+            <div class="summary-row"><span>Converted This Month</span><strong>89</strong></div>
+            <div class="summary-row"><span>Reactivated Customers</span><strong>64</strong></div>
+            <div class="actions">
+              <button class="primary-action" id="followupBtn">Create Follow-Up</button>
+              <button class="secondary-action" id="convertBtn">Convert Lead to Reservation</button>
+              <button class="secondary-action" id="broadcastBtn">Send Targeted Broadcast</button>
+              <button class="secondary-action" id="segmentBtn">Build Customer Segment</button>
+              <button class="secondary-action" id="assignBtn">Bulk Assign Leads</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>CRM Alerts</h3><p>Items requiring management attention.</p></div></div>
+          <div class="alert-list">
+            <article class="alert"><strong>7 Follow-Ups Overdue</strong><p>Three overdue opportunities are valued above QAR 2,000 and should be reassigned if not contacted by 03:30 PM.</p></article>
+            <article class="alert"><strong>High-Value Lead Unassigned</strong><p>A corporate wellness enquiry worth QAR 48,000 has no sales owner.</p></article>
+            <article class="alert"><strong>Retention Risk</strong><p>32 Gold and Platinum customers have no booking in the last 75 days.</p></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Source Performance</h3><p>Lead conversion by acquisition source.</p></div></div>
+          <div class="summary-row"><span>Instagram</span><strong>34.8%</strong></div>
+          <div class="summary-row"><span>WhatsApp</span><strong>42.1%</strong></div>
+          <div class="summary-row"><span>Website</span><strong>29.4%</strong></div>
+          <div class="summary-row"><span>Referral</span><strong>53.6%</strong></div>
+          <div class="summary-row"><span>Phone / Walk-in</span><strong>38.2%</strong></div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>CRM activity last synchronized at 02:52 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+  const leadSearch=document.getElementById("leadSearch");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".segment").forEach(button=>{
+    button.addEventListener("click",()=>{
+      document.querySelectorAll(".segment").forEach(item=>item.classList.remove("active-segment"));
+      button.classList.add("active-segment");
+      showToast(button.textContent+" CRM view selected.");
+    });
+  });
+
+  leadSearch.addEventListener("input",()=>{
+    const value=leadSearch.value.toLowerCase();
+    document.querySelectorAll(".lead-card").forEach(card=>{
+      card.style.display=card.dataset.search.toLowerCase().includes(value)?"block":"none";
+    });
+  });
+
+  document.querySelectorAll(".lead-actions button").forEach(button=>{
+    button.addEventListener("click",()=>showToast(button.textContent+" workflow opened."));
+  });
+
+  document.getElementById("campaignBtn").addEventListener("click",()=>showToast("Campaign builder opened."));
+  document.getElementById("exportBtn").addEventListener("click",()=>showToast("CRM export prepared."));
+  document.getElementById("newLeadBtn").addEventListener("click",()=>showToast("New lead form opened."));
+  document.getElementById("followupBtn").addEventListener("click",()=>showToast("Follow-up activity form opened."));
+  document.getElementById("convertBtn").addEventListener("click",()=>showToast("Lead conversion workflow opened."));
+  document.getElementById("broadcastBtn").addEventListener("click",()=>showToast("Targeted broadcast composer opened."));
+  document.getElementById("segmentBtn").addEventListener("click",()=>showToast("Customer segment builder opened."));
+  document.getElementById("assignBtn").addEventListener("click",()=>showToast("Bulk lead assignment opened."));
+</script>
+</body>
+</html>

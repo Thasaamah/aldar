@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Live Spa Floor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;--sage:#8fa692;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,select{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:11px;margin-bottom:16px}
+    .kpi{
+      padding:15px;border-radius:17px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border)
+    }
+    .kpi span{color:#7b7e77;font-size:.64rem}.kpi strong{display:block;margin-top:7px;font-size:1.15rem}
+    .kpi small{display:block;margin-top:4px;color:var(--green);font-size:.61rem}
+    .toolbar{
+      display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;
+      padding:13px 14px;border-radius:17px;background:rgba(255,255,255,.035);border:1px solid var(--border);margin-bottom:16px
+    }
+    .filters,.legend{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    select{
+      min-width:150px;height:40px;padding:0 12px;border-radius:11px;border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.13);color:var(--text);outline:none
+    }
+    select option{background:#171813}
+    .legend-item{display:flex;align-items:center;gap:6px;color:#858880;font-size:.64rem}
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.live{background:var(--green)}.dot.ready{background:var(--blue)}.dot.cleaning{background:var(--orange)}.dot.blocked{background:var(--red)}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 345px;gap:16px;align-items:start}
+    .floor{
+      display:grid;grid-template-columns:repeat(3,minmax(230px,1fr));gap:12px
+    }
+    .room{
+      min-height:245px;padding:15px;border-radius:18px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+      border:1px solid var(--border);position:relative;overflow:hidden;transition:.2s
+    }
+    .room:hover{transform:translateY(-2px);border-color:rgba(216,184,117,.2)}
+    .room:after{
+      content:"";position:absolute;width:100px;height:100px;right:-35px;bottom:-35px;border-radius:50%;
+      background:radial-gradient(circle,rgba(216,184,117,.08),transparent 70%)
+    }
+    .room.live-room{border-color:rgba(131,201,142,.18)}
+    .room.cleaning-room{border-color:rgba(227,164,93,.18)}
+    .room.blocked-room{border-color:rgba(231,126,126,.18)}
+    .room-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;position:relative;z-index:1}
+    .room-id small{color:#74776f;font-size:.59rem;text-transform:uppercase;letter-spacing:.08em}
+    .room-id h3{margin-top:5px;font-size:.9rem}
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:999px;font-size:.6rem;font-weight:700
+    }
+    .status:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+    .live-status{color:var(--green);background:rgba(131,201,142,.08)}
+    .ready-status{color:var(--blue);background:rgba(126,166,219,.08)}
+    .cleaning-status{color:var(--orange);background:rgba(227,164,93,.08)}
+    .blocked-status{color:var(--red);background:rgba(231,126,126,.08)}
+    .room-body{margin-top:18px;position:relative;z-index:1}
+    .guest{display:flex;align-items:center;gap:10px}
+    .avatar{
+      width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(216,184,117,.1);
+      color:#dfc98f;font-size:.68rem;font-weight:800
+    }
+    .guest strong{font-size:.72rem}.guest span{display:block;margin-top:3px;color:#757870;font-size:.61rem}
+    .service{margin-top:12px;padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .service strong{font-size:.69rem}.service span{display:block;margin-top:4px;color:#767970;font-size:.61rem}
+    .progress-wrap{margin-top:13px}
+    .progress-head{display:flex;justify-content:space-between;gap:10px;color:#777a73;font-size:.61rem}
+    .progress{height:7px;margin-top:7px;border-radius:999px;background:rgba(255,255,255,.055);overflow:hidden}
+    .fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .room-actions{display:flex;gap:7px;margin-top:13px;position:relative;z-index:1}
+    .room-btn{
+      flex:1;min-height:34px;border-radius:9px;border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.025);color:#989b93;font-size:.61rem;cursor:pointer
+    }
+    .room-btn:hover{color:#ecd7a4;border-color:rgba(216,184,117,.18)}
+    .empty-state{margin-top:23px;text-align:center}
+    .empty-state strong{display:block;font-size:.75rem}.empty-state span{display:block;margin-top:6px;color:#777a73;font-size:.62rem;line-height:1.5}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .card{
+      border-radius:19px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .side-card{padding:18px}
+    .section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}
+    .section-head h3{font-size:.92rem}.section-head span{color:#74776f;font-size:.62rem}
+    .alert-list,.therapist-list{display:grid;gap:9px}
+    .alert{
+      padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)
+    }
+    .alert.high{border-color:rgba(231,126,126,.12);background:rgba(231,126,126,.045)}
+    .alert.warning{border-color:rgba(227,164,93,.12);background:rgba(227,164,93,.045)}
+    .alert-top{display:flex;justify-content:space-between;gap:10px}
+    .alert strong{font-size:.67rem}.alert span{font-size:.58rem;color:#74776f}
+    .alert p{margin-top:5px;color:#858880;font-size:.61rem;line-height:1.45}
+    .therapist{
+      display:flex;align-items:center;gap:10px;padding:10px;border-radius:13px;background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.05)
+    }
+    .therapist .avatar{width:36px;height:36px}
+    .therapist-info{flex:1}
+    .therapist strong{font-size:.68rem}.therapist span{display:block;margin-top:3px;color:#74776f;font-size:.59rem}
+    .availability{font-size:.58rem;font-weight:700}.availability.free{color:var(--green)}.availability.busy{color:var(--orange)}
+    .queue-item{
+      padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)
+    }
+    .queue-top{display:flex;justify-content:space-between;gap:10px}
+    .queue-item strong{font-size:.67rem}.queue-item span{color:#777a73;font-size:.58rem}
+    .queue-item p{margin-top:5px;color:#858880;font-size:.61rem}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1350px){.floor{grid-template-columns:repeat(2,minmax(230px,1fr))}.kpis{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1120px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}
+      .topbar-actions .outline-btn{display:none}.kpis{grid-template-columns:repeat(2,1fr)}
+      .floor{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.kpis{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Calendar</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span><b class="badge">8</b></a>
+    </nav>
+
+    <div class="nav-label">Operations</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Therapists</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Room Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Service Sessions</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 12h18M12 3v18"/><circle cx="12" cy="12" r="9"/></svg><span>Housekeeping</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Live Branch</small><strong>Serenity Downtown</strong><span>Doha • Auto-refresh enabled</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Live Spa Floor</h1><p>Monitor room activity, treatment progress, therapist movement, delays, and housekeeping status in real time.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="refreshBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 11a8 8 0 1 0 2 5"/><path d="M20 4v7h-7"/></svg>Refresh Floor</button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+        <button class="primary-btn" id="newSessionBtn">+ Start Walk-in Session</button>
+      </div>
+    </header>
+
+    <section class="kpis">
+      <article class="kpi"><span>Rooms Occupied</span><strong>5 / 8</strong><small>63% live occupancy</small></article>
+      <article class="kpi"><span>Sessions in Progress</span><strong>5</strong><small>2 ending within 15 min</small></article>
+      <article class="kpi"><span>Rooms Ready</span><strong>2</strong><small>R01 and R08 available</small></article>
+      <article class="kpi"><span>Cleaning</span><strong>1</strong><small>R05 ready in 8 min</small></article>
+      <article class="kpi"><span>Therapists Available</span><strong>3</strong><small>2 ready immediately</small></article>
+      <article class="kpi"><span>Operational Alerts</span><strong>4</strong><small>1 high-priority delay</small></article>
+    </section>
+
+    <section class="toolbar">
+      <div class="filters">
+        <select><option>All Zones</option><option>Massage Wing</option><option>Hammam Wing</option><option>Facial Wing</option><option>Couple Suites</option></select>
+        <select><option>All Room Statuses</option><option>In Session</option><option>Ready</option><option>Cleaning</option><option>Blocked</option></select>
+        <select><option>All Therapists</option><option>Noor Ahmed</option><option>Maya Kapoor</option><option>Kevin Andrew</option><option>Lina Saleh</option></select>
+      </div>
+      <div class="legend">
+        <span class="legend-item"><i class="dot live"></i>In Session</span>
+        <span class="legend-item"><i class="dot ready"></i>Ready</span>
+        <span class="legend-item"><i class="dot cleaning"></i>Cleaning</span>
+        <span class="legend-item"><i class="dot blocked"></i>Blocked</span>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section class="floor">
+        <article class="room ready-room">
+          <div class="room-top">
+            <div class="room-id"><small>Massage Wing</small><h3>R01 • Aroma Suite</h3></div>
+            <span class="status ready-status">Ready</span>
+          </div>
+          <div class="empty-state">
+            <strong>Room Prepared</strong>
+            <span>Fresh linen, products, and amenities are ready. No session assigned.</span>
+          </div>
+          <div class="room-actions"><button class="room-btn">Assign Booking</button><button class="room-btn">Block Room</button></div>
+        </article>
+
+        <article class="room live-room">
+          <div class="room-top">
+            <div class="room-id"><small>Massage Wing</small><h3>R02 • Massage Suite</h3></div>
+            <span class="status live-status">In Session</span>
+          </div>
+          <div class="room-body">
+            <div class="guest"><div class="avatar">RK</div><div><strong>Rashid Khan</strong><span>Therapist: Kevin Andrew</span></div></div>
+            <div class="service"><strong>Sports Massage</strong><span>03:30–04:30 PM • Medium pressure</span></div>
+            <div class="progress-wrap"><div class="progress-head"><span>Session progress</span><strong>42 min remaining</strong></div><div class="progress"><div class="fill" style="width:30%"></div></div></div>
+          </div>
+          <div class="room-actions"><button class="room-btn">Open Session</button><button class="room-btn">Add Time</button></div>
+        </article>
+
+        <article class="room live-room">
+          <div class="room-top">
+            <div class="room-id"><small>Couple Wing</small><h3>R03 • Couple Suite</h3></div>
+            <span class="status live-status">In Session</span>
+          </div>
+          <div class="room-body">
+            <div class="guest"><div class="avatar">JM</div><div><strong>John & Maria</strong><span>Aisha Khan + Noor Ahmed</span></div></div>
+            <div class="service"><strong>Couple Signature Ritual</strong><span>02:30–04:30 PM • Welcome tea included</span></div>
+            <div class="progress-wrap"><div class="progress-head"><span>Session progress</span><strong>14 min remaining</strong></div><div class="progress"><div class="fill" style="width:88%"></div></div></div>
+          </div>
+          <div class="room-actions"><button class="room-btn">Open Session</button><button class="room-btn">Prepare Billing</button></div>
+        </article>
+
+        <article class="room live-room">
+          <div class="room-top">
+            <div class="room-id"><small>Hammam Wing</small><h3>R04 • Moroccan Bath</h3></div>
+            <span class="status live-status">In Session</span>
+          </div>
+          <div class="room-body">
+            <div class="guest"><div class="avatar">FA</div><div><strong>Fatima Al Nuaimi</strong><span>Therapist: Noor Ahmed</span></div></div>
+            <div class="service"><strong>Luxury Hammam</strong><span>03:30–05:00 PM • Argan oil upgrade</span></div>
+            <div class="progress-wrap"><div class="progress-head"><span>Session progress</span><strong>55 min remaining</strong></div><div class="progress"><div class="fill" style="width:38%"></div></div></div>
+          </div>
+          <div class="room-actions"><button class="room-btn">Open Session</button><button class="room-btn">Request Assistance</button></div>
+        </article>
+
+        <article class="room cleaning-room">
+          <div class="room-top">
+            <div class="room-id"><small>Multi-purpose Wing</small><h3>R05 • Treatment Room</h3></div>
+            <span class="status cleaning-status">Cleaning</span>
+          </div>
+          <div class="empty-state">
+            <strong>Turnover in Progress</strong>
+            <span>Housekeeping started at 03:37 PM. Estimated room-ready time is 03:50 PM.</span>
+          </div>
+          <div class="progress-wrap"><div class="progress-head"><span>Cleaning progress</span><strong>8 min remaining</strong></div><div class="progress"><div class="fill" style="width:66%"></div></div></div>
+          <div class="room-actions"><button class="room-btn">View Checklist</button><button class="room-btn">Mark Ready</button></div>
+        </article>
+
+        <article class="room live-room">
+          <div class="room-top">
+            <div class="room-id"><small>Facial Wing</small><h3>R06 • Facial Suite</h3></div>
+            <span class="status live-status">In Session</span>
+          </div>
+          <div class="room-body">
+            <div class="guest"><div class="avatar">LH</div><div><strong>Layla Hassan</strong><span>Therapist: Lina Saleh</span></div></div>
+            <div class="service"><strong>Gold Renewal Facial</strong><span>03:45–04:45 PM • Package session 3 of 6</span></div>
+            <div class="progress-wrap"><div class="progress-head"><span>Session progress</span><strong>50 min remaining</strong></div><div class="progress"><div class="fill" style="width:17%"></div></div></div>
+          </div>
+          <div class="room-actions"><button class="room-btn">Open Session</button><button class="room-btn">Add Product</button></div>
+        </article>
+
+        <article class="room blocked-room">
+          <div class="room-top">
+            <div class="room-id"><small>Massage Wing</small><h3>R07 • Massage Room</h3></div>
+            <span class="status blocked-status">Blocked</span>
+          </div>
+          <div class="empty-state">
+            <strong>Maintenance Hold</strong>
+            <span>Air-conditioning inspection in progress. Expected release at 05:30 PM.</span>
+          </div>
+          <div class="room-actions"><button class="room-btn">View Issue</button><button class="room-btn">Release Room</button></div>
+        </article>
+
+        <article class="room ready-room">
+          <div class="room-top">
+            <div class="room-id"><small>Foot Therapy Wing</small><h3>R08 • Foot Lounge</h3></div>
+            <span class="status ready-status">Ready</span>
+          </div>
+          <div class="empty-state">
+            <strong>Available for Walk-in</strong>
+            <span>Room is ready and Amal Joseph is available for an immediate foot-spa session.</span>
+          </div>
+          <div class="room-actions"><button class="room-btn">Start Walk-in</button><button class="room-btn">Reserve Room</button></div>
+        </article>
+      </section>
+
+      <aside class="side-stack">
+        <section class="card side-card">
+          <div class="section-head"><h3>Operational Alerts</h3><span>4 active</span></div>
+          <div class="alert-list">
+            <article class="alert high"><div class="alert-top"><strong>R03 Session Ending Late</strong><span>High</span></div><p>Couple session is projected to exceed the scheduled time by 10 minutes.</p></article>
+            <article class="alert warning"><div class="alert-top"><strong>R05 Cleaning Delay</strong><span>8 min</span></div><p>Next reservation starts at 04:00 PM. Housekeeping completion required.</p></article>
+            <article class="alert"><div class="alert-top"><strong>Walk-in Waiting</strong><span>12 min</span></div><p>Sarah Nadeem is waiting for Express Foot Spa. R08 is ready.</p></article>
+            <article class="alert"><div class="alert-top"><strong>Product Refill</strong><span>Low stock</span></div><p>Argan body oil in R04 requires replenishment after the active session.</p></article>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <div class="section-head"><h3>Therapist Availability</h3><span>8 on duty</span></div>
+          <div class="therapist-list">
+            <div class="therapist"><div class="avatar">AJ</div><div class="therapist-info"><strong>Amal Joseph</strong><span>Foot Spa Specialist</span></div><span class="availability free">Available</span></div>
+            <div class="therapist"><div class="avatar">MK</div><div class="therapist-info"><strong>Maya Kapoor</strong><span>Massage Specialist</span></div><span class="availability free">Available</span></div>
+            <div class="therapist"><div class="avatar">KA</div><div class="therapist-info"><strong>Kevin Andrew</strong><span>R02 • Sports Massage</span></div><span class="availability busy">42 min</span></div>
+            <div class="therapist"><div class="avatar">LS</div><div class="therapist-info"><strong>Lina Saleh</strong><span>R06 • Facial Session</span></div><span class="availability busy">50 min</span></div>
+          </div>
+        </section>
+
+        <section class="card side-card">
+          <div class="section-head"><h3>Waiting Queue</h3><span>3 guests</span></div>
+          <div class="alert-list">
+            <article class="queue-item"><div class="queue-top"><strong>W-104 • Sarah Nadeem</strong><span>12 min</span></div><p>Express Foot Spa • R08 available now</p></article>
+            <article class="queue-item"><div class="queue-top"><strong>W-105 • Omar Khalid</strong><span>7 min</span></div><p>Swedish Massage • Estimated start 04:05 PM</p></article>
+            <article class="queue-item"><div class="queue-top"><strong>W-106 • Nadia George</strong><span>3 min</span></div><p>Hydration Facial • Awaiting therapist assignment</p></article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Live floor synchronized • Last refresh 03:42 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.getElementById("refreshBtn").addEventListener("click",()=>showToast("Live spa floor refreshed successfully."));
+  document.getElementById("newSessionBtn").addEventListener("click",()=>showToast("Walk-in session workflow opened."));
+
+  document.querySelectorAll(".room-btn").forEach(button=>{
+    button.addEventListener("click",()=>showToast(button.textContent.trim()+" selected."));
+  });
+</script>
+</body>
+</html>

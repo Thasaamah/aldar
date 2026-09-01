@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10110f" />
+  <title>Nexilo Spa Management | Reception Dashboard</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0e0f0d;
+      --sidebar: #12130f;
+      --panel: rgba(255,255,255,0.055);
+      --panel-border: rgba(255,255,255,0.09);
+      --text: #f7f3ea;
+      --muted: #a8aaa3;
+      --gold: #d9b975;
+      --gold-2: #b68c46;
+      --sage: #8fa692;
+      --green: #83c98e;
+      --orange: #e3a45d;
+      --red: #e77e7e;
+      --blue: #7ea6db;
+      --purple: #b18bd8;
+      --shadow: 0 24px 60px rgba(0,0,0,0.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(216,184,117,0.10), transparent 25%),
+        radial-gradient(circle at 100% 100%, rgba(143,166,146,0.10), transparent 25%),
+        var(--bg);
+    }
+
+    button, input, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 250px minmax(0,1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--panel-border);
+      background: rgba(17,18,15,0.94);
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 8px 24px;
+    }
+
+    .logo-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(216,184,117,0.2), rgba(255,255,255,0.06));
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .logo-mark svg {
+      width: 26px;
+      height: 26px;
+      stroke: var(--gold);
+    }
+
+    .logo-title {
+      font-weight: 700;
+      line-height: 1.15;
+      font-size: 0.98rem;
+    }
+
+    .logo-sub {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.66rem;
+      color: #797c75;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav-label {
+      padding: 12px 12px 8px;
+      font-size: 0.68rem;
+      color: #696b65;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 46px;
+      padding: 0 13px;
+      border-radius: 13px;
+      color: #a7aaa2;
+      font-size: 0.87rem;
+      transition: 0.2s ease;
+      position: relative;
+    }
+
+    .nav-item svg {
+      width: 19px;
+      height: 19px;
+      stroke: currentColor;
+      flex: 0 0 auto;
+    }
+
+    .nav-item:hover {
+      color: #e4ddcf;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .nav-item.active {
+      color: #f4e4bc;
+      background: linear-gradient(90deg, rgba(216,184,117,0.15), rgba(216,184,117,0.05));
+      border: 1px solid rgba(216,184,117,0.14);
+    }
+
+    .nav-item.active::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 4px;
+      background: var(--gold);
+    }
+
+    .badge {
+      margin-left: auto;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: rgba(216,184,117,0.13);
+      color: #e4ca92;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .sidebar-bottom {
+      margin-top: auto;
+    }
+
+    .branch-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.055), rgba(255,255,255,0.025));
+      border: 1px solid var(--panel-border);
+    }
+
+    .branch-card small {
+      color: #777a73;
+      font-size: 0.69rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .branch-card strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.87rem;
+    }
+
+    .branch-card span {
+      display: block;
+      margin-top: 4px;
+      color: #92958d;
+      font-size: 0.76rem;
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px 26px 34px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .page-title h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.8rem, 3vw, 2.55rem);
+      letter-spacing: -0.03em;
+    }
+
+    .page-title p {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.84rem;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .date-chip, .icon-btn, .profile {
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+    }
+
+    .date-chip {
+      height: 42px;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 12px;
+      color: #c9c7bf;
+      font-size: 0.8rem;
+    }
+
+    .date-chip svg, .icon-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #b7bab2;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .profile {
+      min-width: 165px;
+      height: 46px;
+      padding: 4px 10px 4px 5px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #17150f;
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+
+    .profile strong {
+      display: block;
+      font-size: 0.79rem;
+    }
+
+    .profile span {
+      display: block;
+      margin-top: 2px;
+      color: #7f817b;
+      font-size: 0.69rem;
+    }
+
+    .quick-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px,1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .quick-action {
+      min-height: 64px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-border);
+      background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      color: var(--text);
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .quick-action:hover {
+      transform: translateY(-2px);
+      border-color: rgba(216,184,117,0.24);
+      background: rgba(216,184,117,0.05);
+    }
+
+    .quick-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(216,184,117,0.09);
+      color: var(--gold);
+    }
+
+    .quick-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .quick-action strong {
+      display: block;
+      font-size: 0.78rem;
+    }
+
+    .quick-action span {
+      display: block;
+      margin-top: 3px;
+      color: #858880;
+      font-size: 0.67rem;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(140px,1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.065), rgba(255,255,255,0.035));
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+      backdrop-filter: blur(16px);
+    }
+
+    .metric {
+      min-height: 118px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric::after {
+      content: "";
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      right: -36px;
+      bottom: -36px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(216,184,117,0.12), transparent 70%);
+    }
+
+    .metric-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .metric-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: rgba(216,184,117,0.09);
+      color: var(--gold);
+    }
+
+    .metric-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+    }
+
+    .metric-badge {
+      font-size: 0.63rem;
+      padding: 5px 7px;
+      border-radius: 999px;
+      color: var(--green);
+      background: rgba(131,201,142,0.08);
+      font-weight: 700;
+    }
+
+    .metric-badge.warn {
+      color: var(--orange);
+      background: rgba(227,164,93,0.08);
+    }
+
+    .metric-badge.danger {
+      color: var(--red);
+      background: rgba(231,126,126,0.08);
+    }
+
+    .metric h3 {
+      margin-top: 14px;
+      font-size: 1.35rem;
+      letter-spacing: -0.03em;
+    }
+
+    .metric p {
+      margin-top: 4px;
+      color: #8b8e87;
+      font-size: 0.71rem;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0,1.35fr) minmax(330px,0.65fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .section-card {
+      padding: 20px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-head h3 {
+      font-size: 1rem;
+    }
+
+    .section-head p {
+      margin-top: 4px;
+      color: #858880;
+      font-size: 0.72rem;
+    }
+
+    .head-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-btn {
+      min-height: 34px;
+      padding: 0 11px;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: rgba(255,255,255,0.035);
+      color: #b7b9b2;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 7px;
+      padding: 5px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .tab {
+      border: 0;
+      background: transparent;
+      color: #878a83;
+      padding: 7px 10px;
+      border-radius: 9px;
+      font-size: 0.69rem;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: #f1dfb6;
+      background: rgba(216,184,117,0.11);
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 10px;
+    }
+
+    .booking-row {
+      display: grid;
+      grid-template-columns: 78px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 13px;
+      border-radius: 15px;
+      background: rgba(255,255,255,0.032);
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+
+    .time-block {
+      padding-right: 12px;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .time-block strong {
+      display: block;
+      color: #e2c98f;
+      font-size: 0.79rem;
+    }
+
+    .time-block span {
+      display: block;
+      margin-top: 4px;
+      color: #70736c;
+      font-size: 0.64rem;
+    }
+
+    .booking-main {
+      min-width: 0;
+    }
+
+    .booking-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .booking-top strong {
+      font-size: 0.8rem;
+    }
+
+    .booking-meta {
+      margin-top: 5px;
+      color: #7d8079;
+      font-size: 0.67rem;
+      line-height: 1.5;
+    }
+
+    .booking-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .tag {
+      padding: 5px 8px;
+      border-radius: 999px;
+      font-size: 0.61rem;
+      background: rgba(255,255,255,0.045);
+      color: #aeb1a9;
+    }
+
+    .tag.gold { color: #e2c98f; background: rgba(216,184,117,0.08); }
+    .tag.sage { color: #b9d0bc; background: rgba(143,166,146,0.08); }
+    .tag.blue { color: #a9c5e9; background: rgba(126,166,219,0.08); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-size: 0.63rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status.arrived { color: var(--green); background: rgba(131,201,142,0.08); }
+    .status.upcoming { color: var(--gold); background: rgba(216,184,117,0.08); }
+    .status.delayed { color: var(--red); background: rgba(231,126,126,0.08); }
+    .status.waiting { color: var(--orange); background: rgba(227,164,93,0.08); }
+    .status.checked { color: var(--blue); background: rgba(126,166,219,0.08); }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 10px;
+    }
+
+    .resource {
+      padding: 13px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.032);
+      border: 1px solid rgba(255,255,255,0.055);
+    }
+
+    .resource-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .resource-top strong {
+      font-size: 0.77rem;
+    }
+
+    .resource p {
+      margin-top: 6px;
+      color: #7e817a;
+      font-size: 0.65rem;
+      line-height: 1.5;
+    }
+
+    .resource-progress {
+      height: 5px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden;
+    }
+
+    .resource-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--gold-2), var(--gold));
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(0,0.95fr) minmax(0,1.05fr) minmax(280px,0.7fr);
+      gap: 18px;
+    }
+
+    .walkin-list,
+    .billing-list,
+    .alerts {
+      display: grid;
+      gap: 10px;
+    }
+
+    .walkin-item,
+    .billing-item,
+    .alert-item {
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.032);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .walkin-item,
+    .billing-item {
+      display: grid;
+      grid-template-columns: 38px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .mini-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(216,184,117,0.18), rgba(143,166,146,0.12));
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #dcc58f;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .walkin-item strong,
+    .billing-item strong,
+    .alert-item strong {
+      font-size: 0.75rem;
+    }
+
+    .walkin-item span,
+    .billing-item span {
+      display: block;
+      margin-top: 3px;
+      color: #7d8079;
+      font-size: 0.65rem;
+    }
+
+    .amount {
+      color: #e5cf9d;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .alert-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .alert-icon {
+      width: 29px;
+      height: 29px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(227,164,93,0.09);
+      color: var(--orange);
+      flex: 0 0 auto;
+    }
+
+    .alert-icon svg {
+      width: 15px;
+      height: 15px;
+      stroke: currentColor;
+    }
+
+    .alert-item p {
+      margin-top: 7px;
+      color: #7f827b;
+      font-size: 0.65rem;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: #666962;
+      font-size: 0.67rem;
+    }
+
+    @media (max-width: 1380px) {
+      .summary { grid-template-columns: repeat(3,1fr); }
+      .quick-strip { grid-template-columns: repeat(3,1fr); }
+      .bottom-grid { grid-template-columns: 1fr 1fr; }
+      .bottom-grid .section-card:last-child { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 82px minmax(0,1fr); }
+      .sidebar { padding: 20px 12px; }
+      .logo { justify-content: center; padding-inline: 0; }
+      .logo-title, .logo-sub, .nav-label, .nav-item span, .badge, .branch-card { display: none; }
+      .nav-item { justify-content: center; padding: 0; }
+      .nav-item.active::before { left: -12px; }
+      .layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar {
+        position: fixed;
+        left: -270px;
+        width: 250px;
+        transition: 0.25s ease;
+      }
+      .sidebar.open { left: 0; }
+      .logo-title, .logo-sub, .nav-label, .nav-item span, .badge, .branch-card { display: block; }
+      .nav-item { justify-content: flex-start; padding: 0 13px; }
+      .main { padding: 18px 14px 28px; }
+      .menu-btn { display: grid; place-items: center; }
+      .date-chip, .profile div:not(.avatar) { display: none; }
+      .profile { min-width: auto; padding-right: 5px; }
+      .quick-strip { grid-template-columns: repeat(2,1fr); }
+      .summary { grid-template-columns: repeat(2,1fr); }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .bottom-grid .section-card:last-child { grid-column: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .quick-strip,
+      .summary { grid-template-columns: 1fr; }
+      .resource-grid { grid-template-columns: 1fr; }
+      .booking-row { grid-template-columns: 66px 1fr; }
+      .booking-row > .status { grid-column: 2; width: fit-content; }
+      .footer { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+            <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-title">Nexilo Spa<br>Management</div>
+          <span class="logo-sub">Powered by Nexilo</span>
+        </div>
+      </div>
+
+      <div class="nav-label">Workspace</div>
+      <nav class="nav">
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+          <span>Management</span>
+        </a>
+        <a class="nav-item active" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+          <span>Reception</span><b class="badge">8</b>
+        </a>
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg>
+          <span>Spa Floor</span>
+        </a>
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7 0"/></svg>
+          <span>Customers</span>
+        </a>
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          <span>Therapists</span>
+        </a>
+      </nav>
+
+      <div class="nav-label">Operations</div>
+      <nav class="nav">
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16v14H4z"/><path d="M8 6V4h8v2M8 11h8"/></svg>
+          <span>Services</span>
+        </a>
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg>
+          <span>Billing & POS</span>
+        </a>
+        <a class="nav-item" href="#">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+          <span>Reports</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="branch-card">
+          <small>Reception Desk</small>
+          <strong>Serenity Downtown</strong>
+          <span>Doha • Front Desk 01</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="page-title">
+            <h1>Reception Dashboard</h1>
+            <p>Live control center for arrivals, bookings, rooms, therapists, walk-ins, and billing.</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <div class="date-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>
+            Monday, 20 July 2026
+          </div>
+          <button class="icon-btn" title="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          </button>
+          <button class="icon-btn" title="Notifications">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+          </button>
+          <div class="profile">
+            <div class="avatar">RS</div>
+            <div>
+              <strong>Riya Shah</strong>
+              <span>Reception Executive</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="quick-strip">
+        <button class="quick-action">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16M12 13v4M10 15h4"/></svg>
+          </span>
+          <span><strong>New Reservation</strong><span>Book room and therapist</span></span>
+        </button>
+
+        <button class="quick-action">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0M18 4v6M15 7h6"/></svg>
+          </span>
+          <span><strong>Walk-In Customer</strong><span>Create instant booking</span></span>
+        </button>
+
+        <button class="quick-action">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg>
+          </span>
+          <span><strong>Check-In Guest</strong><span>Confirm arrival and room</span></span>
+        </button>
+
+        <button class="quick-action">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg>
+          </span>
+          <span><strong>Open POS</strong><span>Bill services and products</span></span>
+        </button>
+
+        <button class="quick-action">
+          <span class="quick-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          </span>
+          <span><strong>Customer Search</strong><span>History, membership, wallet</span></span>
+        </button>
+      </section>
+
+      <section class="summary">
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg></div>
+            <span class="metric-badge">On track</span>
+          </div>
+          <h3>42</h3>
+          <p>Bookings Today</p>
+        </article>
+
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+            <span class="metric-badge">6 waiting</span>
+          </div>
+          <h3>31</h3>
+          <p>Customers Arrived</p>
+        </article>
+
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8"/></svg></div>
+            <span class="metric-badge">75%</span>
+          </div>
+          <h3>6 / 8</h3>
+          <p>Rooms Occupied</p>
+        </article>
+
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+            <span class="metric-badge">2 free</span>
+          </div>
+          <h3>10 / 12</h3>
+          <p>Therapists Busy</p>
+        </article>
+
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+            <span class="metric-badge warn">Review</span>
+          </div>
+          <h3>2</h3>
+          <p>Delayed Sessions</p>
+        </article>
+
+        <article class="card metric">
+          <div class="metric-top">
+            <div class="metric-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16v14H4z"/><path d="M8 6V4h8v2M8 11h8"/></svg></div>
+            <span class="metric-badge danger">Pending</span>
+          </div>
+          <h3>5</h3>
+          <p>Customers Awaiting Bill</p>
+        </article>
+      </section>
+
+      <section class="layout">
+        <article class="card section-card">
+          <div class="section-head">
+            <div>
+              <h3>Today’s Reservation Timeline</h3>
+              <p>Live arrivals, check-ins, waiting customers, and upcoming bookings</p>
+            </div>
+            <div class="head-actions">
+              <div class="tabs">
+                <button class="tab active">All</button>
+                <button class="tab">Arrived</button>
+                <button class="tab">Upcoming</button>
+              </div>
+              <button class="section-btn">Calendar View</button>
+            </div>
+          </div>
+
+          <div class="timeline">
+            <div class="booking-row">
+              <div class="time-block"><strong>03:15 PM</strong><span>15 mins ago</span></div>
+              <div class="booking-main">
+                <div class="booking-top"><strong>Fatima Al Nuaimi</strong><span class="status arrived">Arrived</span></div>
+                <div class="booking-meta">Luxury Hammam • 90 min • Therapist Noor • Room R04</div>
+                <div class="booking-tags"><span class="tag gold">Gold Member</span><span class="tag sage">Advance Paid</span><span class="tag blue">WhatsApp Booking</span></div>
+              </div>
+              <button class="section-btn">Check In</button>
+            </div>
+
+            <div class="booking-row">
+              <div class="time-block"><strong>03:30 PM</strong><span>Now</span></div>
+              <div class="booking-main">
+                <div class="booking-top"><strong>Rashid Khan</strong><span class="status waiting">Waiting</span></div>
+                <div class="booking-meta">Sports Massage • 60 min • Therapist Kevin • Room R02</div>
+                <div class="booking-tags"><span class="tag">First Visit</span><span class="tag sage">Card Saved</span></div>
+              </div>
+              <button class="section-btn">Assign Room</button>
+            </div>
+
+            <div class="booking-row">
+              <div class="time-block"><strong>03:45 PM</strong><span>In 15 mins</span></div>
+              <div class="booking-main">
+                <div class="booking-top"><strong>Elena Petrova</strong><span class="status upcoming">Upcoming</span></div>
+                <div class="booking-meta">Aroma Ritual • 75 min • Therapist Maya • Room R01</div>
+                <div class="booking-tags"><span class="tag gold">VIP</span><span class="tag">Requested Maya</span></div>
+              </div>
+              <button class="section-btn">View</button>
+            </div>
+
+            <div class="booking-row">
+              <div class="time-block"><strong>04:00 PM</strong><span>In 30 mins</span></div>
+              <div class="booking-main">
+                <div class="booking-top"><strong>Layla Hassan</strong><span class="status delayed">Delayed</span></div>
+                <div class="booking-meta">Gold Facial Package • 60 min • Therapist Lina • Room R06</div>
+                <div class="booking-tags"><span class="tag gold">Package Customer</span><span class="tag blue">Called Reception</span></div>
+              </div>
+              <button class="section-btn">Contact</button>
+            </div>
+
+            <div class="booking-row">
+              <div class="time-block"><strong>04:15 PM</strong><span>In 45 mins</span></div>
+              <div class="booking-main">
+                <div class="booking-top"><strong>John & Maria</strong><span class="status checked">Confirmed</span></div>
+                <div class="booking-meta">Couple Signature Ritual • 120 min • Therapists Aisha & Noor • Room R03</div>
+                <div class="booking-tags"><span class="tag gold">Couple Package</span><span class="tag sage">Fully Paid</span></div>
+              </div>
+              <button class="section-btn">Prepare</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card section-card">
+          <div class="section-head">
+            <div>
+              <h3>Live Resource Availability</h3>
+              <p>Rooms and therapists available for new bookings</p>
+            </div>
+            <button class="section-btn">Open Spa Floor</button>
+          </div>
+
+          <div class="resource-grid">
+            <div class="resource">
+              <div class="resource-top"><strong>Available Rooms</strong><span class="status arrived">2 ready</span></div>
+              <p>R02 Aromatherapy<br>R07 Express Treatment</p>
+              <div class="resource-progress"><span style="width:25%"></span></div>
+            </div>
+            <div class="resource">
+              <div class="resource-top"><strong>Occupied Rooms</strong><span class="status upcoming">6 active</span></div>
+              <p>Average remaining session time is approximately 38 minutes.</p>
+              <div class="resource-progress"><span style="width:75%"></span></div>
+            </div>
+            <div class="resource">
+              <div class="resource-top"><strong>Available Therapists</strong><span class="status arrived">2 free</span></div>
+              <p>Sarah – Facial<br>Amal – Massage</p>
+              <div class="resource-progress"><span style="width:18%"></span></div>
+            </div>
+            <div class="resource">
+              <div class="resource-top"><strong>Cleaning Queue</strong><span class="status waiting">1 room</span></div>
+              <p>R04 expected ready in 8 minutes.</p>
+              <div class="resource-progress"><span style="width:62%"></span></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="card section-card">
+          <div class="section-head">
+            <div>
+              <h3>Walk-In Queue</h3>
+              <p>Customers waiting without prior reservation</p>
+            </div>
+            <button class="section-btn">Add Walk-In</button>
+          </div>
+
+          <div class="walkin-list">
+            <div class="walkin-item">
+              <div class="mini-avatar">SN</div>
+              <div><strong>Sarah Nadeem</strong><span>Foot Spa • Waiting 12 min</span></div>
+              <span class="status waiting">Waiting</span>
+            </div>
+            <div class="walkin-item">
+              <div class="mini-avatar">OM</div>
+              <div><strong>Omar Malik</strong><span>Deep Tissue • Waiting 6 min</span></div>
+              <span class="status arrived">Ready</span>
+            </div>
+            <div class="walkin-item">
+              <div class="mini-avatar">JR</div>
+              <div><strong>Julia Rose</strong><span>Consultation • Waiting 3 min</span></div>
+              <span class="status checked">Consult</span>
+            </div>
+          </div>
+        </article>
+
+        <article class="card section-card">
+          <div class="section-head">
+            <div>
+              <h3>Pending Billing</h3>
+              <p>Completed sessions awaiting invoice or payment</p>
+            </div>
+            <button class="section-btn">Open POS</button>
+          </div>
+
+          <div class="billing-list">
+            <div class="billing-item">
+              <div class="mini-avatar">AA</div>
+              <div><strong>Ahmed Al Ansari</strong><span>Thai Massage + Oil Upgrade</span></div>
+              <div class="amount">QAR 520</div>
+            </div>
+            <div class="billing-item">
+              <div class="mini-avatar">NK</div>
+              <div><strong>Nina Kapoor</strong><span>Facial Package + Retail Product</span></div>
+              <div class="amount">QAR 680</div>
+            </div>
+            <div class="billing-item">
+              <div class="mini-avatar">MH</div>
+              <div><strong>Maha Hassan</strong><span>Membership Renewal</span></div>
+              <div class="amount">QAR 1,200</div>
+            </div>
+            <div class="billing-item">
+              <div class="mini-avatar">KT</div>
+              <div><strong>Khalid Tariq</strong><span>Sports Massage</span></div>
+              <div class="amount">QAR 350</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card section-card">
+          <div class="section-head">
+            <div>
+              <h3>Reception Alerts</h3>
+              <p>Immediate actions for the front desk</p>
+            </div>
+          </div>
+
+          <div class="alerts">
+            <div class="alert-item">
+              <div class="alert-top">
+                <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 9v4M12 17h.01"/><path d="M10.3 4.3 2.9 17.1A2 2 0 0 0 4.6 20h14.8a2 2 0 0 0 1.7-2.9L13.7 4.3a2 2 0 0 0-3.4 0Z"/></svg></div>
+                <strong>Room R06 running 14 minutes late</strong>
+              </div>
+              <p>Inform the next customer or reassign an available room.</p>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-top">
+                <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                <strong>Therapist Amal free for 30 minutes</strong>
+              </div>
+              <p>Suitable for walk-in foot spa or express massage.</p>
+            </div>
+
+            <div class="alert-item">
+              <div class="alert-top">
+                <div class="alert-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16v14H4z"/><path d="M8 6V4h8v2M8 11h8"/></svg></div>
+                <strong>One VIP guest arriving at 4:15 PM</strong>
+              </div>
+              <p>Prepare welcome drink, couple suite, and preference notes.</p>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <footer class="footer">
+        <span>Nexilo Spa Management • Powered by Nexilo</span>
+        <span>Reception status: Online • Last refreshed 03:31 PM</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
+    });
+
+    document.addEventListener("click", (event) => {
+      const isMobile = window.innerWidth <= 760;
+      if (isMobile && !sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+        sidebar.classList.remove("open");
+      }
+    });
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
+        tab.classList.add("active");
+      });
+    });
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.addEventListener("click", event => {
+        event.preventDefault();
+        document.querySelectorAll(".nav-item").forEach(nav => nav.classList.remove("active"));
+        item.classList.add("active");
+      });
+    });
+
+    document.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        button.animate(
+          [{ transform: "scale(1)" }, { transform: "scale(0.97)" }, { transform: "scale(1)" }],
+          { duration: 180 }
+        );
+      });
+    });
+  </script>
+</body>
+</html>

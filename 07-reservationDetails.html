@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Reservation Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;--sage:#8fa692;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .menu-btn,.icon-btn,.back-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn{display:none;width:42px;height:42px;border-radius:12px}
+    .back-btn{height:42px;padding:0 13px;border-radius:12px;display:flex;align-items:center;gap:8px;font-size:.72rem}
+    .back-btn svg,.icon-btn svg,.outline-btn svg{width:17px;height:17px;stroke:currentColor}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.75rem,3vw,2.45rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.82rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .icon-btn{width:42px;height:42px;border-radius:12px;display:grid;place-items:center}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .hero{
+      padding:22px;border-radius:22px;background:
+        linear-gradient(125deg,rgba(216,184,117,.12),rgba(255,255,255,.035) 50%,rgba(143,166,146,.07));
+      border:1px solid rgba(216,184,117,.14);margin-bottom:16px;position:relative;overflow:hidden
+    }
+    .hero:after{
+      content:"";position:absolute;width:240px;height:240px;right:-80px;top:-90px;border-radius:50%;
+      background:radial-gradient(circle,rgba(216,184,117,.13),transparent 68%)
+    }
+    .hero-main{display:flex;justify-content:space-between;gap:25px;position:relative;z-index:1}
+    .reservation-title{display:flex;gap:15px;align-items:center}
+    .customer-avatar{
+      width:62px;height:62px;border-radius:18px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#18150e;font-size:1.05rem;font-weight:800
+    }
+    .reservation-title small{color:#c7ad73;font-size:.65rem;text-transform:uppercase;letter-spacing:.12em}
+    .reservation-title h2{margin-top:6px;font-size:1.25rem}
+    .reservation-title p{margin-top:5px;color:#898c84;font-size:.72rem}
+    .hero-actions{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;justify-content:flex-end}
+    .outline-btn{
+      min-height:39px;padding:0 11px;border-radius:11px;display:flex;align-items:center;gap:7px;font-size:.68rem
+    }
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;
+      font-size:.65rem;font-weight:700;white-space:nowrap
+    }
+    .status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .confirmed{color:var(--green);background:rgba(131,201,142,.09)}
+    .partial{color:var(--gold);background:rgba(216,184,117,.09)}
+    .vip{color:var(--purple);background:rgba(177,139,216,.09)}
+    .hero-meta{
+      display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-top:20px;position:relative;z-index:1
+    }
+    .meta-item{padding:12px;border-radius:14px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.055)}
+    .meta-item span{display:block;color:#74776f;font-size:.61rem;text-transform:uppercase;letter-spacing:.06em}
+    .meta-item strong{display:block;margin-top:6px;font-size:.73rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(330px,.65fr);gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:20px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+    .section-head h3{font-size:.98rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.7rem}
+    .section-btn{
+      min-height:34px;padding:0 10px;border-radius:10px;border:1px solid var(--border);
+      background:rgba(255,255,255,.03);color:#aeb1a9;font-size:.67rem;cursor:pointer
+    }
+    .service-card{
+      padding:16px;border-radius:17px;background:linear-gradient(135deg,rgba(216,184,117,.08),rgba(255,255,255,.025));
+      border:1px solid rgba(216,184,117,.13);display:grid;grid-template-columns:50px 1fr auto;gap:13px;align-items:center
+    }
+    .service-icon{
+      width:50px;height:50px;border-radius:15px;display:grid;place-items:center;color:var(--gold);
+      background:rgba(216,184,117,.09)
+    }
+    .service-icon svg{width:23px;height:23px;stroke:currentColor}
+    .service-card strong{font-size:.8rem}.service-card p{margin-top:5px;color:#7f827b;font-size:.66rem;line-height:1.5}
+    .service-card .price{text-align:right;color:#e6d09c;font-weight:700;font-size:.82rem}
+    .service-card .price span{display:block;margin-top:4px;color:#73766f;font-weight:500;font-size:.62rem}
+    .addon-list{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:11px}
+    .addon{padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055);display:flex;justify-content:space-between;gap:12px}
+    .addon strong{font-size:.69rem}.addon span{font-size:.66rem;color:#dcc58e}
+    .timeline{display:grid;gap:0}
+    .timeline-item{display:grid;grid-template-columns:30px 1fr;gap:12px;position:relative;padding-bottom:19px}
+    .timeline-item:last-child{padding-bottom:0}
+    .timeline-item:not(:last-child):before{
+      content:"";position:absolute;left:14px;top:29px;bottom:0;width:1px;background:rgba(255,255,255,.08)
+    }
+    .timeline-dot{
+      width:29px;height:29px;border-radius:10px;display:grid;place-items:center;background:rgba(216,184,117,.09);
+      color:var(--gold);font-size:.66rem;font-weight:800;z-index:1
+    }
+    .timeline-item.done .timeline-dot{background:rgba(131,201,142,.1);color:var(--green)}
+    .timeline-item.current .timeline-dot{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f}
+    .timeline-content{padding:5px 0 0}
+    .timeline-content strong{font-size:.73rem}.timeline-content span{float:right;color:#777a73;font-size:.62rem}
+    .timeline-content p{margin-top:5px;color:#7b7e77;font-size:.65rem;line-height:1.45}
+    .resource-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .resource{
+      padding:14px;border-radius:15px;background:rgba(255,255,255,.027);border:1px solid rgba(255,255,255,.06)
+    }
+    .resource-top{display:flex;align-items:center;gap:10px}
+    .mini-avatar{
+      width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(216,184,117,.1);
+      color:#dfc98f;font-size:.68rem;font-weight:800
+    }
+    .resource strong{font-size:.73rem}.resource span{display:block;margin-top:3px;color:#74776f;font-size:.62rem}
+    .resource p{margin-top:10px;color:#8b8e86;font-size:.64rem;line-height:1.5}
+    .note{
+      padding:13px;border-radius:14px;background:rgba(227,164,93,.055);border:1px solid rgba(227,164,93,.11);
+      color:#a9a69d;font-size:.68rem;line-height:1.6
+    }
+    .note strong{color:#e1bf8d}
+    .right-stack{display:grid;gap:16px}
+    .payment-summary{padding:19px}
+    .amount-hero{text-align:center;padding:17px;border-radius:16px;background:rgba(216,184,117,.06);border:1px solid rgba(216,184,117,.1)}
+    .amount-hero span{color:#7c7f78;font-size:.66rem}.amount-hero h3{margin-top:7px;font-size:1.65rem;color:#ecd59f}
+    .amount-hero small{display:block;margin-top:5px;color:var(--green);font-size:.63rem}
+    .summary-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.69rem}
+    .summary-row span{color:#7f827b}.summary-row strong{color:#d2d2ca}
+    .summary-row.total{border-bottom:0;padding-top:15px}.summary-row.total strong{color:#ecd59f;font-size:.95rem}
+    .payment-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+    .payment-actions button{
+      min-height:41px;border-radius:11px;cursor:pointer;font-size:.67rem;font-weight:700
+    }
+    .pay-btn{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .link-btn{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b2b5ad}
+    .customer-profile{padding:19px}
+    .profile-header{display:flex;align-items:center;gap:11px}
+    .profile-header .customer-avatar{width:48px;height:48px;border-radius:14px;font-size:.8rem}
+    .profile-header strong{font-size:.78rem}.profile-header span{display:block;margin-top:3px;color:#777a73;font-size:.64rem}
+    .customer-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+    .tag{padding:5px 8px;border-radius:999px;background:rgba(216,184,117,.08);color:#d9c18b;font-size:.59rem}
+    .profile-list{margin-top:13px;display:grid;gap:9px}
+    .profile-line{display:flex;justify-content:space-between;gap:12px;color:#7f827b;font-size:.66rem}
+    .profile-line strong{color:#bdbfb7;text-align:right}
+    .communication-list{display:grid;gap:10px}
+    .communication{
+      padding:11px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)
+    }
+    .communication-top{display:flex;justify-content:space-between;gap:10px}
+    .communication strong{font-size:.68rem}.communication span{color:#71746d;font-size:.59rem}
+    .communication p{margin-top:5px;color:#858880;font-size:.63rem;line-height:1.45}
+    textarea{
+      width:100%;min-height:82px;padding:12px;border-radius:13px;border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.12);color:var(--text);outline:none;resize:vertical
+    }
+    textarea:focus{border-color:rgba(216,184,117,.45);box-shadow:0 0 0 4px rgba(216,184,117,.07)}
+    .add-note{display:flex;justify-content:flex-end;margin-top:9px}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1250px){.hero-meta{grid-template-columns:repeat(3,1fr)}.layout{grid-template-columns:1fr}.right-stack{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.back-btn span{display:none}
+      .hero-main{flex-direction:column}.hero-actions{justify-content:flex-start}.hero-meta{grid-template-columns:repeat(2,1fr)}
+      .right-stack{grid-template-columns:1fr}.resource-grid,.addon-list{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.hero-meta{grid-template-columns:1fr}.service-card{grid-template-columns:44px 1fr}.service-card .price{grid-column:2;text-align:left}.footer{flex-direction:column}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Calendar</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Reservation List</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Reservation Details</span><b class="badge">07</b></a>
+    </nav>
+
+    <div class="nav-label">Operations</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7 0"/></svg><span>Customers</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Therapists</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Billing & POS</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Current Branch</small><strong>Serenity Downtown</strong><span>Doha • Front Desk 01</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <button class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m15 18-6-6 6-6"/></svg><span>Reservation List</span></button>
+        <div class="page-title"><h1>Reservation Details</h1><p>Complete booking, customer, payment, resource, and communication information.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" title="Print"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/></svg></button>
+        <button class="primary-btn" id="checkinBtn">Check In Customer</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="reservation-title">
+          <div class="customer-avatar">FA</div>
+          <div>
+            <small>Reservation RSV-260720-041</small>
+            <h2>Fatima Al Nuaimi</h2>
+            <p>Gold Member • 18 previous visits • Booked through WhatsApp</p>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <span class="status confirmed">Confirmed</span>
+          <span class="status partial">Partially Paid</span>
+          <span class="status vip">Gold Member</span>
+          <button class="outline-btn" id="editBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m4 20 4-1 10-10-3-3L5 16l-1 4Z"/></svg>Edit</button>
+          <button class="outline-btn" id="messageBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v12H7l-3 3V5Z"/></svg>Message</button>
+          <button class="outline-btn" id="moreBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>More</button>
+        </div>
+      </div>
+
+      <div class="hero-meta">
+        <div class="meta-item"><span>Date</span><strong>Monday, 20 July 2026</strong></div>
+        <div class="meta-item"><span>Appointment</span><strong>03:30–05:00 PM</strong></div>
+        <div class="meta-item"><span>Duration</span><strong>90 Minutes</strong></div>
+        <div class="meta-item"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+        <div class="meta-item"><span>Room</span><strong>R04 • Moroccan Bath</strong></div>
+        <div class="meta-item"><span>Guests</span><strong>1 Guest</strong></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Booked Service</h3><p>Primary treatment and selected enhancements.</p></div>
+            <button class="section-btn">Modify Service</button>
+          </div>
+
+          <div class="service-card">
+            <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M7 18c0-4 2-7 5-10 3 3 5 6 5 10"/><path d="M4 20h16M9 7c0-2 1-3 3-4 2 1 3 2 3 4"/></svg></div>
+            <div>
+              <strong>Luxury Hammam</strong>
+              <p>Traditional cleansing ritual with steam, black soap exfoliation, body mask, and premium finishing treatment.</p>
+            </div>
+            <div class="price">QAR 620<span>90 minutes</span></div>
+          </div>
+
+          <div class="addon-list">
+            <div class="addon"><strong>Argan Oil Upgrade</strong><span>QAR 80</span></div>
+            <div class="addon"><strong>Gold Member Discount</strong><span>− QAR 70</span></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Reservation Journey</h3><p>Operational progress from booking through service completion.</p></div>
+            <button class="section-btn">View Activity Log</button>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-item done">
+              <div class="timeline-dot">✓</div>
+              <div class="timeline-content"><strong>Reservation Created</strong><span>2:14 PM</span><p>Created by Riya Shah through the reception WhatsApp channel.</p></div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-dot">✓</div>
+              <div class="timeline-content"><strong>Advance Payment Received</strong><span>2:18 PM</span><p>QAR 200 received through secure online payment link.</p></div>
+            </div>
+            <div class="timeline-item done">
+              <div class="timeline-dot">✓</div>
+              <div class="timeline-content"><strong>Booking Confirmed</strong><span>2:19 PM</span><p>WhatsApp confirmation and appointment details sent successfully.</p></div>
+            </div>
+            <div class="timeline-item current">
+              <div class="timeline-dot">4</div>
+              <div class="timeline-content"><strong>Awaiting Customer Arrival</strong><span>Next</span><p>Expected arrival is 15 minutes before the scheduled appointment.</p></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">5</div>
+              <div class="timeline-content"><strong>Check-In & Service Start</strong><span>Pending</span><p>Confirm health notes, assign locker, and start the session.</p></div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">6</div>
+              <div class="timeline-content"><strong>Completion & Billing</strong><span>Pending</span><p>Complete service notes, collect balance, and request feedback.</p></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Assigned Resources</h3><p>Therapist and room allocated to this reservation.</p></div>
+            <button class="section-btn">Reassign Resources</button>
+          </div>
+
+          <div class="resource-grid">
+            <article class="resource">
+              <div class="resource-top"><div class="mini-avatar">NA</div><div><strong>Noor Ahmed</strong><span>Senior Hammam Specialist</span></div></div>
+              <p>Rating 4.9 ★ • 94% satisfaction<br>Available from 03:15 PM • Female therapist</p>
+            </article>
+            <article class="resource">
+              <div class="resource-top"><div class="mini-avatar">R04</div><div><strong>Moroccan Bath Suite</strong><span>Room R04 • Premium setup</span></div></div>
+              <p>Steam ready • Cleaning completed<br>Required products reserved for session</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Guest Preferences & Health Notes</h3><p>Important preparation information for the therapist and reception team.</p></div>
+            <button class="section-btn">Edit Notes</button>
+          </div>
+          <div class="note"><strong>Service preference:</strong> Low room temperature, soft-to-medium pressure, and jasmine fragrance. Avoid strong eucalyptus oils. Customer reported mild skin sensitivity during a previous visit. Confirm product suitability before starting treatment.</div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Internal Notes</h3><p>Private operational notes visible only to authorized spa staff.</p></div>
+          </div>
+          <textarea id="noteText" placeholder="Add an internal note for reception, therapist, billing, or management..."></textarea>
+          <div class="add-note"><button class="section-btn" id="saveNote">Save Internal Note</button></div>
+        </section>
+      </div>
+
+      <aside class="right-stack">
+        <section class="card payment-summary">
+          <div class="section-head">
+            <div><h3>Payment Summary</h3><p>Reservation charges and collection status.</p></div>
+          </div>
+
+          <div class="amount-hero">
+            <span>Total Reservation Value</span>
+            <h3>QAR 630</h3>
+            <small>QAR 200 advance received</small>
+          </div>
+
+          <div class="summary-row"><span>Luxury Hammam</span><strong>QAR 620</strong></div>
+          <div class="summary-row"><span>Argan Oil Upgrade</span><strong>QAR 80</strong></div>
+          <div class="summary-row"><span>Gold Member Discount</span><strong style="color:var(--green)">− QAR 70</strong></div>
+          <div class="summary-row"><span>Advance Paid</span><strong>− QAR 200</strong></div>
+          <div class="summary-row total"><span>Balance Payable</span><strong>QAR 430</strong></div>
+
+          <div class="payment-actions">
+            <button class="pay-btn" id="collectBtn">Collect Payment</button>
+            <button class="link-btn" id="paymentLinkBtn">Send Payment Link</button>
+          </div>
+        </section>
+
+        <section class="card customer-profile">
+          <div class="section-head">
+            <div><h3>Customer Profile</h3><p>Membership and relationship summary.</p></div>
+            <button class="section-btn">Open Profile</button>
+          </div>
+
+          <div class="profile-header">
+            <div class="customer-avatar">FA</div>
+            <div><strong>Fatima Al Nuaimi</strong><span>Customer since March 2024</span></div>
+          </div>
+
+          <div class="customer-tags"><span class="tag">Gold Member</span><span class="tag">VIP Preference</span><span class="tag">18 Visits</span></div>
+
+          <div class="profile-list">
+            <div class="profile-line"><span>Mobile</span><strong>+974 5558 2410</strong></div>
+            <div class="profile-line"><span>Email</span><strong>fatima@example.com</strong></div>
+            <div class="profile-line"><span>Lifetime Spend</span><strong>QAR 12,860</strong></div>
+            <div class="profile-line"><span>Loyalty Points</span><strong>1,480 Points</strong></div>
+            <div class="profile-line"><span>Preferred Therapist</span><strong>Noor Ahmed</strong></div>
+            <div class="profile-line"><span>Last Visit</span><strong>28 June 2026</strong></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Communication History</h3><p>Messages and booking notifications.</p></div>
+            <button class="section-btn">Send Message</button>
+          </div>
+
+          <div class="communication-list">
+            <div class="communication">
+              <div class="communication-top"><strong>WhatsApp Confirmation</strong><span>2:19 PM</span></div>
+              <p>Reservation confirmation, location, service, therapist, and arrival instructions delivered.</p>
+            </div>
+            <div class="communication">
+              <div class="communication-top"><strong>Payment Link</strong><span>2:15 PM</span></div>
+              <p>Secure link sent for QAR 200 advance. Payment completed at 2:18 PM.</p>
+            </div>
+            <div class="communication">
+              <div class="communication-top"><strong>Customer Request</strong><span>2:11 PM</span></div>
+              <p>Requested Noor Ahmed and jasmine fragrance for the treatment.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Quick Actions</h3><p>Common front-desk operations.</p></div>
+          </div>
+          <div class="payment-actions">
+            <button class="link-btn quick">Reschedule</button>
+            <button class="link-btn quick">Duplicate</button>
+            <button class="link-btn quick">Add Service</button>
+            <button class="link-btn quick">Print Voucher</button>
+            <button class="link-btn quick">Cancel Booking</button>
+            <button class="link-btn quick">Mark No-Show</button>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Reservation last updated by Riya Shah at 02:19 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.getElementById("checkinBtn").addEventListener("click",()=>showToast("Customer check-in workflow opened."));
+  document.getElementById("editBtn").addEventListener("click",()=>showToast("Reservation editor opened."));
+  document.getElementById("messageBtn").addEventListener("click",()=>showToast("Customer communication panel opened."));
+  document.getElementById("moreBtn").addEventListener("click",()=>showToast("Additional reservation actions opened."));
+  document.getElementById("collectBtn").addEventListener("click",()=>showToast("Payment collection screen opened."));
+  document.getElementById("paymentLinkBtn").addEventListener("click",()=>showToast("Secure payment link prepared."));
+  document.getElementById("saveNote").addEventListener("click",()=>{
+    const value=document.getElementById("noteText").value.trim();
+    showToast(value ? "Internal note saved successfully." : "Enter a note before saving.");
+  });
+
+  document.querySelectorAll(".section-btn,.quick,.icon-btn,.back-btn").forEach(button=>{
+    if(!button.id){
+      button.addEventListener("click",()=>showToast(button.textContent.trim() || "Action selected."));
+    }
+  });
+</script>
+</body>
+</html>

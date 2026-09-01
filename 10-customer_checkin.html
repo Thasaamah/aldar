@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Customer Check-In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .lookup{
+      padding:18px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);margin-bottom:16px
+    }
+    .lookup-grid{display:grid;grid-template-columns:minmax(0,1fr) 190px 150px;gap:10px}
+    .search-wrap{position:relative}
+    .search-wrap svg{position:absolute;left:13px;top:14px;width:18px;height:18px;stroke:#777a73}
+    input,select,textarea{
+      width:100%;border-radius:13px;border:1px solid rgba(255,255,255,.09);
+      background:rgba(0,0,0,.13);color:var(--text);outline:none
+    }
+    input,select{height:47px;padding:0 13px}.search-wrap input{padding-left:42px}
+    textarea{min-height:88px;padding:12px;resize:vertical}
+    input::placeholder,textarea::placeholder{color:#666961}
+    input:focus,select:focus,textarea:focus{border-color:rgba(216,184,117,.48);box-shadow:0 0 0 4px rgba(216,184,117,.07)}
+    select option{background:#171813}
+    .lookup-btn{
+      border:0;border-radius:13px;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));
+      color:#17150f;font-weight:800;cursor:pointer
+    }
+    .hero{
+      padding:20px;border-radius:21px;background:
+        linear-gradient(125deg,rgba(216,184,117,.12),rgba(255,255,255,.035) 50%,rgba(143,166,146,.07));
+      border:1px solid rgba(216,184,117,.14);margin-bottom:16px
+    }
+    .hero-main{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}
+    .customer{display:flex;gap:14px;align-items:center}
+    .avatar{
+      width:58px;height:58px;border-radius:17px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-weight:800
+    }
+    .customer small{color:#c5aa70;font-size:.63rem;text-transform:uppercase;letter-spacing:.1em}
+    .customer h2{margin-top:5px;font-size:1.15rem}.customer p{margin-top:5px;color:#858880;font-size:.69rem}
+    .status-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.62rem;font-weight:700
+    }
+    .status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .confirmed{color:var(--green);background:rgba(131,201,142,.09)}
+    .payment{color:var(--gold);background:rgba(216,184,117,.09)}
+    .member{color:var(--purple);background:rgba(177,139,216,.09)}
+    .meta{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:16px}
+    .meta-item{padding:11px;border-radius:13px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.055)}
+    .meta-item span{display:block;color:#74776f;font-size:.59rem;text-transform:uppercase}
+    .meta-item strong{display:block;margin-top:5px;font-size:.7rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:19px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+    .section-head h3{font-size:.96rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.68rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.6rem;font-weight:700}
+    .checklist{display:grid;gap:9px}
+    .check-item{
+      display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:12px;
+      border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .check-item input{width:18px;height:18px;accent-color:#c9a75d}
+    .check-item strong{font-size:.69rem}.check-item p{margin-top:3px;color:#777a73;font-size:.61rem;line-height:1.45}
+    .check-state{color:var(--green);font-size:.6rem;font-weight:700}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:7px;color:#c7c9c1;font-size:.69rem;font-weight:600}
+    .health-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .health{
+      padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);cursor:pointer;position:relative
+    }
+    .health.selected{background:rgba(216,184,117,.07);border-color:rgba(216,184,117,.24)}
+    .health input{position:absolute;right:10px;top:10px;width:17px;height:17px;accent-color:#c9a75d}
+    .health strong{font-size:.67rem}.health span{display:block;margin-top:4px;color:#757870;font-size:.6rem}
+    .consent{
+      padding:13px;border-radius:14px;background:rgba(126,166,219,.05);border:1px solid rgba(126,166,219,.11)
+    }
+    .consent label{display:flex;gap:9px;align-items:flex-start;margin:0;color:#aaaDA5;line-height:1.55;font-weight:500}
+    .consent input{width:18px;height:18px;margin-top:2px;accent-color:#c9a75d}
+    .assignment-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+    .assignment{
+      padding:13px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .assignment span{display:block;color:#757870;font-size:.59rem;text-transform:uppercase}
+    .assignment strong{display:block;margin-top:5px;font-size:.71rem}
+    .assignment small{display:block;margin-top:4px;color:var(--green);font-size:.59rem}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:145px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.15),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.59rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.35rem}
+    .summary-body{padding:17px}
+    .readiness{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(131,201,142,.05);
+      border:1px solid rgba(131,201,142,.11)
+    }
+    .readiness span{color:#777a73;font-size:.62rem}.readiness strong{display:block;margin-top:6px;color:var(--green);font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.67rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .amount-box{margin-top:11px;padding:12px;border-radius:13px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .amount-row{display:flex;justify-content:space-between;padding:5px 0;color:#858880;font-size:.65rem}
+    .amount-row.total{padding-top:10px;margin-top:5px;border-top:1px solid rgba(255,255,255,.06);color:#ecd59f;font-size:.86rem;font-weight:700}
+    .notice{
+      margin-top:11px;padding:11px;border-radius:13px;background:rgba(227,164,93,.055);
+      border:1px solid rgba(227,164,93,.11);color:#aaa69d;font-size:.62rem;line-height:1.5
+    }
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary,.secondary{min-height:46px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .activity-list{display:grid;gap:8px}
+    .activity{padding:10px;border-radius:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.05)}
+    .activity-top{display:flex;justify-content:space-between;gap:10px}
+    .activity strong{font-size:.65rem}.activity span{color:#72756d;font-size:.57rem}
+    .activity p{margin-top:4px;color:#858880;font-size:.59rem;line-height:1.4}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1230px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .lookup-grid,.form-grid,.health-grid,.assignment-grid{grid-template-columns:1fr}.meta{grid-template-columns:repeat(2,1fr)}
+      .hero-main{flex-direction:column}.status-group{justify-content:flex-start}.side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.meta{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Calendar</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="8" height="7" rx="2"/><rect x="13" y="4" width="8" height="7" rx="2"/><rect x="3" y="13" width="8" height="7" rx="2"/><rect x="13" y="13" width="8" height="7" rx="2"/></svg><span>Live Spa Floor</span></a>
+    </nav>
+
+    <div class="nav-label">Guest Journey</div>
+    <nav class="nav">
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8v8M13 12h8"/></svg><span>Customer Check-In</span><b class="badge">4</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Service Session</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Billing & POS</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Customer Feedback</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Reception Desk</small><strong>Serenity Downtown</strong><span>Doha • Check-in counter 01</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Customer Check-In</h1><p>Confirm arrival, validate guest information, complete health consent, and prepare the service session.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="scanBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><path d="M8 8h8v8H8z"/></svg>Scan Booking QR</button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="primary-btn" id="walkinBtn">+ Walk-in Check-In</button>
+      </div>
+    </header>
+
+    <section class="lookup">
+      <div class="lookup-grid">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+          <input type="text" value="RSV-260720-041" placeholder="Search reservation ID, customer name, mobile, membership ID, or scan QR">
+        </div>
+        <select><option>Today’s Reservations</option><option>All Active Reservations</option><option>Walk-in Queue</option><option>Members Only</option></select>
+        <button class="lookup-btn" id="lookupBtn">Find Booking</button>
+      </div>
+    </section>
+
+    <section class="hero">
+      <div class="hero-main">
+        <div class="customer">
+          <div class="avatar">FA</div>
+          <div>
+            <small>Reservation RSV-260720-041</small>
+            <h2>Fatima Al Nuaimi</h2>
+            <p>Gold Member • Arrived 14 minutes before appointment • 18 previous visits</p>
+          </div>
+        </div>
+        <div class="status-group">
+          <span class="status confirmed">Confirmed</span>
+          <span class="status payment">Partially Paid</span>
+          <span class="status member">Gold Member</span>
+        </div>
+      </div>
+
+      <div class="meta">
+        <div class="meta-item"><span>Appointment</span><strong>03:30–05:00 PM</strong></div>
+        <div class="meta-item"><span>Service</span><strong>Luxury Hammam</strong></div>
+        <div class="meta-item"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+        <div class="meta-item"><span>Room</span><strong>R04 • Moroccan Bath</strong></div>
+        <div class="meta-item"><span>Guests</span><strong>1 Guest</strong></div>
+        <div class="meta-item"><span>Arrival</span><strong>03:16 PM</strong></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Arrival Verification</h3><p>Confirm booking identity and required reception checks.</p></div>
+            <span class="tag">Step 1 of 4</span>
+          </div>
+
+          <div class="checklist">
+            <label class="check-item"><input type="checkbox" checked><div><strong>Customer identity verified</strong><p>Name and mobile number confirmed against the reservation.</p></div><span class="check-state">Complete</span></label>
+            <label class="check-item"><input type="checkbox" checked><div><strong>Reservation details confirmed</strong><p>Service, appointment time, therapist, room, and add-ons reviewed.</p></div><span class="check-state">Complete</span></label>
+            <label class="check-item"><input type="checkbox" checked><div><strong>Membership validated</strong><p>Gold membership is active until 31 December 2026.</p></div><span class="check-state">Complete</span></label>
+            <label class="check-item"><input type="checkbox"><div><strong>Valuables and personal items explained</strong><p>Guest advised to store personal belongings in the assigned locker.</p></div><span class="check-state">Pending</span></label>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Guest Profile Confirmation</h3><p>Update contact, communication, and emergency information where necessary.</p></div>
+            <span class="tag">Step 2 of 4</span>
+          </div>
+
+          <div class="form-grid">
+            <div><label>Mobile Number</label><input type="text" value="+974 5558 2410"></div>
+            <div><label>Email Address</label><input type="email" value="fatima@example.com"></div>
+            <div><label>Preferred Language</label><select><option>Arabic</option><option>English</option><option>Hindi</option></select></div>
+            <div><label>Communication Preference</label><select><option>WhatsApp</option><option>SMS</option><option>Email</option><option>No Message</option></select></div>
+            <div><label>Emergency Contact</label><input type="text" value="+974 6602 2188"></div>
+            <div><label>Relationship</label><select><option>Spouse</option><option>Parent</option><option>Sibling</option><option>Friend</option></select></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Health Declaration</h3><p>Record conditions that may affect treatment suitability or therapist preparation.</p></div>
+            <span class="tag">Step 3 of 4</span>
+          </div>
+
+          <div class="health-grid">
+            <label class="health selected"><input type="checkbox" checked><strong>Skin Sensitivity</strong><span>Mild sensitivity previously reported.</span></label>
+            <label class="health"><input type="checkbox"><strong>Pregnancy</strong><span>No current pregnancy reported.</span></label>
+            <label class="health"><input type="checkbox"><strong>Recent Surgery</strong><span>No surgery within the last six months.</span></label>
+            <label class="health"><input type="checkbox"><strong>High Blood Pressure</strong><span>No hypertension reported.</span></label>
+            <label class="health"><input type="checkbox"><strong>Allergy</strong><span>Avoid strong eucalyptus oils.</span></label>
+            <label class="health"><input type="checkbox"><strong>Injury / Pain</strong><span>No active injury reported.</span></label>
+          </div>
+
+          <div class="form-grid" style="margin-top:13px">
+            <div><label>Pressure Preference</label><select><option>Soft to Medium</option><option>Soft</option><option>Medium</option><option>Firm</option></select></div>
+            <div><label>Room Temperature</label><select><option>Cool</option><option>Standard</option><option>Warm</option></select></div>
+            <div class="full"><label>Health Notes / Therapist Instructions</label><textarea>Customer has mild skin sensitivity. Use patch-tested products only and avoid strong eucalyptus fragrance. Jasmine fragrance preferred.</textarea></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Consent & Service Agreement</h3><p>Obtain customer acknowledgment before beginning the treatment.</p></div>
+            <span class="tag">Step 4 of 4</span>
+          </div>
+
+          <div class="checklist">
+            <label class="check-item"><input type="checkbox" checked><div><strong>Treatment consent obtained</strong><p>Guest confirms that the declared health information is accurate and consents to the selected service.</p></div><span class="check-state">Signed</span></label>
+            <label class="check-item"><input type="checkbox" checked><div><strong>Cancellation and late-arrival policy accepted</strong><p>Customer acknowledges applicable cancellation, rescheduling, and shortened-session policies.</p></div><span class="check-state">Accepted</span></label>
+            <label class="check-item"><input type="checkbox"><div><strong>Marketing communication consent</strong><p>Optional consent for offers, wellness campaigns, and loyalty updates.</p></div><span class="check-state">Optional</span></label>
+          </div>
+
+          <div class="consent" style="margin-top:11px">
+            <label><input type="checkbox" id="signatureCheck">I confirm that the guest has reviewed the declaration and service policy. Digital signature or reception-assisted consent has been captured.</label>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Locker, Amenities & Resource Preparation</h3><p>Complete operational assignments before directing the guest to the treatment area.</p></div>
+          </div>
+
+          <div class="assignment-grid">
+            <div class="assignment"><span>Locker</span><strong>L-024</strong><small>Key issued</small></div>
+            <div class="assignment"><span>Robe & Slippers</span><strong>Medium • Premium Set</strong><small>Prepared</small></div>
+            <div class="assignment"><span>Waiting Lounge</span><strong>VIP Relaxation Lounge</strong><small>Tea requested</small></div>
+            <div class="assignment"><span>Therapist</span><strong>Noor Ahmed</strong><small>Notified</small></div>
+            <div class="assignment"><span>Treatment Room</span><strong>R04 • Moroccan Bath</strong><small>Ready</small></div>
+            <div class="assignment"><span>Welcome Beverage</span><strong>Jasmine Tea</strong><small>In preparation</small></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Check-In Preview</small>
+            <h3>Luxury Hammam</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="readiness">
+              <span>Operational Readiness</span>
+              <strong>Ready for Check-In</strong>
+            </div>
+
+            <div class="summary-row"><span>Reservation</span><strong>RSV-260720-041</strong></div>
+            <div class="summary-row"><span>Customer</span><strong>Fatima Al Nuaimi</strong></div>
+            <div class="summary-row"><span>Appointment</span><strong>03:30 PM</strong></div>
+            <div class="summary-row"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+            <div class="summary-row"><span>Room</span><strong>R04</strong></div>
+            <div class="summary-row"><span>Locker</span><strong>L-024</strong></div>
+
+            <div class="amount-box">
+              <div class="amount-row"><span>Reservation Value</span><strong>QAR 630</strong></div>
+              <div class="amount-row"><span>Advance Received</span><strong>QAR 200</strong></div>
+              <div class="amount-row total"><span>Balance Due</span><strong>QAR 430</strong></div>
+            </div>
+
+            <div class="notice">Balance payment can be collected now or during final billing. The service may begin because the required advance has already been received.</div>
+
+            <div class="actions">
+              <button class="primary" id="completeBtn">Complete Check-In</button>
+              <button class="secondary" id="collectBtn">Collect Balance Now</button>
+              <button class="secondary" id="signatureBtn">Capture Digital Signature</button>
+              <button class="secondary" id="holdBtn">Place Check-In on Hold</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Recent Activity</h3><p>Latest reception and customer actions.</p></div></div>
+          <div class="activity-list">
+            <article class="activity"><div class="activity-top"><strong>Customer Arrival Logged</strong><span>03:16 PM</span></div><p>Arrival captured by Riya Shah at reception counter 01.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Room Marked Ready</strong><span>03:12 PM</span></div><p>Housekeeping completed the R04 preparation checklist.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Therapist Notified</strong><span>03:10 PM</span></div><p>Noor Ahmed received the guest preference and health note summary.</p></article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Check-in desk synchronized • Customer arrived at 03:16 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".health").forEach(item=>{
+    item.addEventListener("click",event=>{
+      if(event.target.tagName!=="INPUT"){
+        const checkbox=item.querySelector("input");
+        checkbox.checked=!checkbox.checked;
+      }
+      item.classList.toggle("selected",item.querySelector("input").checked);
+    });
+  });
+
+  document.getElementById("lookupBtn").addEventListener("click",()=>showToast("Reservation found and loaded."));
+  document.getElementById("scanBtn").addEventListener("click",()=>showToast("QR scanner opened."));
+  document.getElementById("walkinBtn").addEventListener("click",()=>showToast("Walk-in check-in workflow opened."));
+  document.getElementById("collectBtn").addEventListener("click",()=>showToast("Balance payment collection opened."));
+  document.getElementById("signatureBtn").addEventListener("click",()=>{
+    document.getElementById("signatureCheck").checked=true;
+    showToast("Digital signature captured successfully.");
+  });
+  document.getElementById("holdBtn").addEventListener("click",()=>showToast("Check-in placed on temporary hold."));
+  document.getElementById("completeBtn").addEventListener("click",()=>{
+    if(!document.getElementById("signatureCheck").checked){
+      showToast("Capture or confirm the customer consent before completing check-in.");
+      return;
+    }
+    showToast("Customer check-in completed. Service session is ready to start.");
+  });
+</script>
+</body>
+</html>

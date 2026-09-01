@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Customer Profile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn,.outline-btn{
+      border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn,.icon-btn{width:42px;height:42px;border-radius:12px}
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg,.outline-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .outline-btn{min-height:42px;padding:0 12px;border-radius:12px;display:flex;align-items:center;gap:7px;font-size:.68rem}
+    .primary-btn{
+      min-height:42px;padding:0 14px;border:0;border-radius:12px;color:#17150f;
+      background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));font-weight:800;cursor:pointer
+    }
+    .profile-hero{
+      padding:22px;border-radius:22px;background:
+        linear-gradient(125deg,rgba(216,184,117,.14),rgba(255,255,255,.035) 50%,rgba(143,166,146,.08));
+      border:1px solid rgba(216,184,117,.15);margin-bottom:16px
+    }
+    .profile-main{display:flex;justify-content:space-between;gap:22px;align-items:flex-start}
+    .profile-left{display:flex;gap:15px;align-items:center}
+    .avatar{
+      width:72px;height:72px;border-radius:21px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-size:1.2rem;font-weight:800
+    }
+    .profile-left small{color:#c5aa70;font-size:.63rem;text-transform:uppercase;letter-spacing:.1em}
+    .profile-left h2{margin-top:6px;font-size:1.35rem}
+    .profile-left p{margin-top:6px;color:#8a8d85;font-size:.7rem}
+    .status-group{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .status{
+      display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:.62rem;font-weight:700
+    }
+    .status:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .active{color:var(--green);background:rgba(131,201,142,.09)}
+    .member{color:var(--purple);background:rgba(177,139,216,.09)}
+    .vip{color:var(--gold);background:rgba(216,184,117,.09)}
+    .hero-meta{display:grid;grid-template-columns:repeat(6,1fr);gap:9px;margin-top:17px}
+    .hero-meta div{padding:11px;border-radius:13px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.055)}
+    .hero-meta span{display:block;color:#74776f;font-size:.58rem;text-transform:uppercase}
+    .hero-meta strong{display:block;margin-top:5px;font-size:.7rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:19px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+    .section-head h3{font-size:.96rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.68rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.6rem;font-weight:700}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .tab{
+      padding:9px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.06);
+      background:rgba(255,255,255,.025);color:#8f928a;font-size:.64rem;cursor:pointer
+    }
+    .tab.active-tab{color:#edd69e;background:rgba(216,184,117,.08);border-color:rgba(216,184,117,.2)}
+    .info-grid,.preference-grid,.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .info,.preference,.stat{
+      padding:13px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .info span,.preference span,.stat span{display:block;color:#757870;font-size:.58rem;text-transform:uppercase}
+    .info strong,.preference strong,.stat strong{display:block;margin-top:5px;font-size:.7rem}
+    .stat strong{font-size:1rem;color:#ecd59f}
+    .history-table{width:100%;border-collapse:collapse}
+    .history-table th,.history-table td{padding:11px 9px;text-align:left;border-bottom:1px solid rgba(255,255,255,.055);font-size:.64rem}
+    .history-table th{color:#777a73;font-size:.57rem;text-transform:uppercase;letter-spacing:.05em}
+    .history-table td{color:#c6c8c0}
+    .history-table strong{display:block;font-size:.67rem}.history-table span{display:block;margin-top:4px;color:#74776f;font-size:.58rem}
+    .pill{display:inline-flex;padding:6px 8px;border-radius:999px;font-size:.57rem;font-weight:700}
+    .paid{color:var(--green);background:rgba(131,201,142,.08)}
+    .completed-pill{color:var(--blue);background:rgba(126,166,219,.08)}
+    .package-list,.activity-list,.document-list{display:grid;gap:9px}
+    .package,.activity,.document{
+      padding:12px;border-radius:14px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.055)
+    }
+    .package-top,.activity-top,.document-top{display:flex;justify-content:space-between;gap:12px}
+    .package strong,.activity strong,.document strong{font-size:.67rem}
+    .package span,.activity span,.document span{color:#777a73;font-size:.58rem}
+    .package p,.activity p,.document p{margin-top:5px;color:#858880;font-size:.59rem;line-height:1.45}
+    .progress{height:7px;margin-top:10px;border-radius:999px;background:rgba(255,255,255,.055);overflow:hidden}
+    .progress-fill{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .health-note{
+      padding:13px;border-radius:14px;background:rgba(227,164,93,.055);border:1px solid rgba(227,164,93,.11)
+    }
+    .health-note strong{font-size:.68rem;color:#e6ba82}.health-note p{margin-top:6px;color:#aaa69d;font-size:.61rem;line-height:1.55}
+    .side-stack{display:grid;gap:15px;position:sticky;top:18px}
+    .summary-card{overflow:hidden}
+    .summary-hero{
+      min-height:150px;padding:18px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.15),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .summary-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.59rem}
+    .summary-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.35rem}
+    .summary-body{padding:17px}
+    .loyalty-box{
+      padding:14px;border-radius:14px;text-align:center;background:rgba(177,139,216,.05);
+      border:1px solid rgba(177,139,216,.11)
+    }
+    .loyalty-box span{color:#777a73;font-size:.62rem}.loyalty-box strong{display:block;margin-top:6px;color:#c4a1e5;font-size:1rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.67rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .actions{display:grid;gap:8px;margin-top:13px}
+    .primary-action,.secondary-action,.danger-action{min-height:45px;border-radius:12px;font-weight:700;cursor:pointer}
+    .primary-action{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary-action{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .danger-action{border:1px solid rgba(231,126,126,.16);background:rgba(231,126,126,.05);color:#e89b9b}
+    .next-visit{
+      padding:13px;border-radius:14px;background:rgba(126,166,219,.05);border:1px solid rgba(126,166,219,.11)
+    }
+    .next-visit strong{font-size:.68rem}.next-visit p{margin-top:6px;color:#858880;font-size:.6rem;line-height:1.5}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1230px){.layout{grid-template-columns:1fr}.side-stack{position:static;grid-template-columns:repeat(2,1fr)}.hero-meta{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.topbar-actions .outline-btn{display:none}
+      .profile-main{flex-direction:column}.status-group{justify-content:flex-start}.hero-meta{grid-template-columns:repeat(2,1fr)}
+      .info-grid,.preference-grid,.stats-grid{grid-template-columns:1fr}.side-stack{grid-template-columns:1fr}
+    }
+    @media(max-width:480px){.hero-meta{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Customers</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Customer List</span></a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8h4M19 6v4"/></svg><span>Customer Profile</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 3h14v18H5z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Visit History</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg><span>Membership & Loyalty</span></a>
+    </nav>
+
+    <div class="nav-label">Guest Journey</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Reservations</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 8v8M13 12h8"/></svg><span>Customer Check-In</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>POS Billing</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Customer Record</small><strong>CUST-001284</strong><span>Gold Member • Active</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Customer Profile</h1><p>View the complete guest relationship, wellness history, membership, preferences, and commercial value.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="outline-btn" id="messageBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg>Send Message</button>
+        <button class="outline-btn" id="editBtn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>Edit Profile</button>
+        <button class="primary-btn" id="bookBtn">+ New Reservation</button>
+      </div>
+    </header>
+
+    <section class="profile-hero">
+      <div class="profile-main">
+        <div class="profile-left">
+          <div class="avatar">FA</div>
+          <div>
+            <small>Customer ID CUST-001284</small>
+            <h2>Fatima Al Nuaimi</h2>
+            <p>Gold Member • Joined 12 February 2024 • Preferred branch: Serenity Downtown</p>
+          </div>
+        </div>
+        <div class="status-group">
+          <span class="status active">Active Customer</span>
+          <span class="status member">Gold Member</span>
+          <span class="status vip">VIP Guest</span>
+        </div>
+      </div>
+
+      <div class="hero-meta">
+        <div><span>Mobile</span><strong>+974 5558 2410</strong></div>
+        <div><span>Email</span><strong>fatima@example.com</strong></div>
+        <div><span>Total Visits</span><strong>18 Visits</strong></div>
+        <div><span>Total Spend</span><strong>QAR 12,840</strong></div>
+        <div><span>Loyalty Points</span><strong>3,223 Points</strong></div>
+        <div><span>Last Visit</span><strong>20 July 2026</strong></div>
+      </div>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Customer Overview</h3><p>Personal, communication, and relationship information.</p></div>
+            <span class="tag">360° Guest View</span>
+          </div>
+
+          <div class="tabs">
+            <button class="tab active-tab">Overview</button>
+            <button class="tab">Visits</button>
+            <button class="tab">Packages</button>
+            <button class="tab">Membership</button>
+            <button class="tab">Health</button>
+            <button class="tab">Communications</button>
+            <button class="tab">Documents</button>
+          </div>
+
+          <div class="info-grid">
+            <div class="info"><span>Date of Birth</span><strong>14 September 1989</strong></div>
+            <div class="info"><span>Preferred Language</span><strong>Arabic</strong></div>
+            <div class="info"><span>Communication</span><strong>WhatsApp</strong></div>
+            <div class="info"><span>Gender</span><strong>Female</strong></div>
+            <div class="info"><span>Nationality</span><strong>Qatari</strong></div>
+            <div class="info"><span>Customer Source</span><strong>Instagram Campaign</strong></div>
+            <div class="info"><span>Emergency Contact</span><strong>+974 6602 2188</strong></div>
+            <div class="info"><span>Relationship</span><strong>Spouse</strong></div>
+            <div class="info"><span>Assigned Advisor</span><strong>Riya Shah</strong></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Customer Value & Engagement</h3><p>Lifetime value, visit behaviour, and service engagement.</p></div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat"><span>Lifetime Value</span><strong>QAR 12,840</strong></div>
+            <div class="stat"><span>Average Ticket</span><strong>QAR 713</strong></div>
+            <div class="stat"><span>Visit Frequency</span><strong>Every 24 Days</strong></div>
+            <div class="stat"><span>Services Purchased</span><strong>27</strong></div>
+            <div class="stat"><span>Retail Products</span><strong>9</strong></div>
+            <div class="stat"><span>Referral Value</span><strong>QAR 1,450</strong></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Preferences & Personalisation</h3><p>Use these preferences to improve booking, treatment, and communication quality.</p></div>
+            <span class="tag">Auto-Applied to Bookings</span>
+          </div>
+
+          <div class="preference-grid">
+            <div class="preference"><span>Preferred Therapist</span><strong>Noor Ahmed</strong></div>
+            <div class="preference"><span>Pressure</span><strong>Soft to Medium</strong></div>
+            <div class="preference"><span>Fragrance</span><strong>Jasmine</strong></div>
+            <div class="preference"><span>Room Temperature</span><strong>Cool</strong></div>
+            <div class="preference"><span>Preferred Time</span><strong>Afternoon</strong></div>
+            <div class="preference"><span>Refreshment</span><strong>Jasmine Tea</strong></div>
+            <div class="preference"><span>Communication Style</span><strong>Quiet Treatment</strong></div>
+            <div class="preference"><span>Invoice Delivery</span><strong>WhatsApp + Email</strong></div>
+            <div class="preference"><span>Favourite Service</span><strong>Luxury Hammam</strong></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Health & Treatment Notes</h3><p>Important wellness information available to authorised therapists.</p></div>
+            <span class="tag">Restricted Access</span>
+          </div>
+
+          <div class="health-note">
+            <strong>Mild Skin Sensitivity</strong>
+            <p>Use patch-tested products only. Avoid strong eucalyptus oils and use soft pressure during exfoliation. No history of hypertension, recent surgery, or pregnancy reported.</p>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Recent Visit History</h3><p>Latest completed services, spend, therapist, and feedback.</p></div>
+            <span class="tag">18 Total Visits</span>
+          </div>
+
+          <div style="overflow:auto">
+            <table class="history-table">
+              <thead><tr><th>Date</th><th>Service</th><th>Therapist</th><th>Amount</th><th>Status</th><th>Feedback</th></tr></thead>
+              <tbody>
+                <tr><td>20 Jul 2026</td><td><strong>Luxury Hammam</strong><span>With Argan Oil Upgrade</span></td><td>Noor Ahmed</td><td>QAR 743</td><td><span class="pill completed-pill">Completed</span></td><td>5.0 ★</td></tr>
+                <tr><td>26 Jun 2026</td><td><strong>Hydration Facial</strong><span>Gold member benefit used</span></td><td>Maya Khan</td><td>QAR 320</td><td><span class="pill completed-pill">Completed</span></td><td>4.8 ★</td></tr>
+                <tr><td>03 Jun 2026</td><td><strong>Deep Tissue Massage</strong><span>90-minute session</span></td><td>Noor Ahmed</td><td>QAR 490</td><td><span class="pill completed-pill">Completed</span></td><td>5.0 ★</td></tr>
+                <tr><td>10 May 2026</td><td><strong>Luxury Hammam</strong><span>Package session 2 of 6</span></td><td>Noor Ahmed</td><td>QAR 0</td><td><span class="pill paid">Package</span></td><td>4.9 ★</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Active Packages & Membership</h3><p>Remaining sessions, expiry, and usage status.</p></div>
+          </div>
+
+          <div class="package-list">
+            <article class="package">
+              <div class="package-top"><strong>Wellness Signature 6</strong><span>3 of 6 used</span></div>
+              <p>Includes Luxury Hammam, Deep Tissue Massage, and Hydration Facial. Expires 31 December 2026.</p>
+              <div class="progress"><div class="progress-fill" style="width:50%"></div></div>
+            </article>
+            <article class="package">
+              <div class="package-top"><strong>Gold Membership</strong><span>Active</span></div>
+              <p>10% service discount, priority booking, birthday benefit, and double loyalty points. Renewal due 12 February 2027.</p>
+              <div class="progress"><div class="progress-fill" style="width:78%"></div></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Communications & Documents</h3><p>Recent messages, consent records, and uploaded customer documents.</p></div>
+          </div>
+
+          <div class="activity-list">
+            <article class="activity"><div class="activity-top"><strong>Invoice Sent</strong><span>20 Jul 2026 • 05:15 PM</span></div><p>Invoice INV-260720-018 delivered by WhatsApp and email.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Feedback Request Sent</strong><span>20 Jul 2026 • 05:18 PM</span></div><p>Post-treatment feedback link sent through WhatsApp.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Birthday Campaign</strong><span>14 Sep 2025</span></div><p>Complimentary tea ritual offer delivered and redeemed.</p></article>
+          </div>
+
+          <div class="document-list" style="margin-top:12px">
+            <article class="document"><div class="document-top"><strong>Health Declaration & Consent</strong><span>Signed 20 Jul 2026</span></div><p>Digital consent captured during check-in.</p></article>
+            <article class="document"><div class="document-top"><strong>Membership Agreement</strong><span>Signed 12 Feb 2024</span></div><p>Gold membership terms accepted electronically.</p></article>
+          </div>
+        </section>
+      </div>
+
+      <aside class="side-stack">
+        <section class="card summary-card">
+          <div class="summary-hero">
+            <small>Guest Relationship</small>
+            <h3>Gold Member Profile</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="loyalty-box">
+              <span>Available Loyalty Points</span>
+              <strong>3,223 Points</strong>
+            </div>
+
+            <div class="summary-row"><span>Member Since</span><strong>12 Feb 2024</strong></div>
+            <div class="summary-row"><span>Membership Expiry</span><strong>12 Feb 2027</strong></div>
+            <div class="summary-row"><span>Last Visit</span><strong>20 Jul 2026</strong></div>
+            <div class="summary-row"><span>Next Recommended</span><strong>Hydration Facial</strong></div>
+            <div class="summary-row"><span>Customer Tier</span><strong>VIP • High Value</strong></div>
+
+            <div class="actions">
+              <button class="primary-action" id="bookSideBtn">Create Reservation</button>
+              <button class="secondary-action" id="packageBtn">Sell Package</button>
+              <button class="secondary-action" id="membershipBtn">Manage Membership</button>
+              <button class="secondary-action" id="voucherBtn">Issue Gift Voucher</button>
+              <button class="secondary-action" id="noteBtn">Add Internal Note</button>
+              <button class="danger-action" id="blockBtn">Block Customer</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Next Best Action</h3><p>Recommended engagement based on visit behaviour.</p></div></div>
+          <div class="next-visit">
+            <strong>Book Hydration Facial</strong>
+            <p>Recommended within 7–10 days after the latest Hammam treatment. Preferred afternoon slot with Maya Khan.</p>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head"><div><h3>Recent Activity</h3><p>Latest profile and account events.</p></div></div>
+          <div class="activity-list">
+            <article class="activity"><div class="activity-top"><strong>Visit Completed</strong><span>20 Jul</span></div><p>Luxury Hammam completed with a 5-star rating.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Points Credited</strong><span>20 Jul</span></div><p>743 loyalty points added after invoice payment.</p></article>
+            <article class="activity"><div class="activity-top"><strong>Profile Updated</strong><span>20 Jul</span></div><p>Skin sensitivity note reconfirmed at check-in.</p></article>
+          </div>
+        </section>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Customer profile last updated 20 July 2026 at 05:18 PM</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2500);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".tab").forEach(tab=>{
+    tab.addEventListener("click",()=>{
+      document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active-tab"));
+      tab.classList.add("active-tab");
+      showToast(tab.textContent+" section selected.");
+    });
+  });
+
+  document.getElementById("messageBtn").addEventListener("click",()=>showToast("Customer communication composer opened."));
+  document.getElementById("editBtn").addEventListener("click",()=>showToast("Customer profile edit mode opened."));
+  document.getElementById("bookBtn").addEventListener("click",()=>showToast("New reservation workflow opened."));
+  document.getElementById("bookSideBtn").addEventListener("click",()=>showToast("New reservation workflow opened."));
+  document.getElementById("packageBtn").addEventListener("click",()=>showToast("Package sales options opened."));
+  document.getElementById("membershipBtn").addEventListener("click",()=>showToast("Membership management opened."));
+  document.getElementById("voucherBtn").addEventListener("click",()=>showToast("Gift voucher issuance opened."));
+  document.getElementById("noteBtn").addEventListener("click",()=>showToast("Internal note editor opened."));
+  document.getElementById("blockBtn").addEventListener("click",()=>showToast("Customer blocking confirmation requested."));
+</script>
+</body>
+</html>

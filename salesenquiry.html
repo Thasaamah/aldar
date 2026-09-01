@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#10110f">
+  <title>Nexilo Spa Management | Sales Enquiry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0e0f0d;--panel:rgba(255,255,255,.055);--border:rgba(255,255,255,.09);
+      --text:#f7f3ea;--muted:#a8aaa3;--gold:#d9b975;--gold2:#b68c46;--sage:#8fa692;
+      --green:#83c98e;--orange:#e3a45d;--red:#e77e7e;--blue:#7ea6db;--purple:#b18bd8
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      min-height:100vh;font-family:"DM Sans",sans-serif;color:var(--text);
+      background:
+        radial-gradient(circle at 15% 0%,rgba(216,184,117,.1),transparent 25%),
+        radial-gradient(circle at 100% 100%,rgba(143,166,146,.1),transparent 25%),var(--bg)
+    }
+    button,input,select,textarea{font:inherit}a{color:inherit;text-decoration:none}
+    .app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+    .sidebar{
+      position:sticky;top:0;height:100vh;padding:24px 18px;border-right:1px solid var(--border);
+      background:rgba(17,18,15,.94);backdrop-filter:blur(22px);display:flex;flex-direction:column;z-index:20
+    }
+    .logo{display:flex;align-items:center;gap:12px;padding:0 8px 24px}
+    .logo-mark{
+      width:46px;height:46px;display:grid;place-items:center;border-radius:15px;
+      background:linear-gradient(145deg,rgba(216,184,117,.2),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.12)
+    }
+    .logo-mark svg{width:26px;height:26px;stroke:var(--gold)}
+    .logo-title{font-weight:700;line-height:1.15;font-size:.98rem}
+    .logo-sub{display:block;margin-top:3px;font-size:.66rem;color:#797c75;letter-spacing:.12em;text-transform:uppercase}
+    .nav-label{padding:12px 12px 8px;font-size:.68rem;color:#696b65;letter-spacing:.14em;text-transform:uppercase;font-weight:700}
+    .nav{display:grid;gap:6px}
+    .nav-item{
+      display:flex;align-items:center;gap:12px;min-height:46px;padding:0 13px;border-radius:13px;
+      color:#a7aaa2;font-size:.87rem;position:relative;transition:.2s
+    }
+    .nav-item svg{width:19px;height:19px;stroke:currentColor}
+    .nav-item:hover{color:#e4ddcf;background:rgba(255,255,255,.04)}
+    .nav-item.active{
+      color:#f4e4bc;background:linear-gradient(90deg,rgba(216,184,117,.15),rgba(216,184,117,.05));
+      border:1px solid rgba(216,184,117,.14)
+    }
+    .nav-item.active:before{
+      content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;border-radius:4px;background:var(--gold)
+    }
+    .badge{
+      margin-left:auto;min-width:22px;height:22px;padding:0 7px;display:grid;place-items:center;border-radius:999px;
+      background:rgba(216,184,117,.13);color:#e4ca92;font-size:.7rem;font-weight:700
+    }
+    .sidebar-bottom{margin-top:auto}
+    .branch-card{padding:14px;border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid var(--border)}
+    .branch-card small{color:#777a73;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+    .branch-card strong{display:block;margin-top:5px;font-size:.87rem}
+    .branch-card span{display:block;margin-top:4px;color:#92958d;font-size:.76rem}
+    .main{min-width:0;padding:24px 26px 34px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+    .topbar-left{display:flex;align-items:center;gap:13px}
+    .menu-btn,.icon-btn{
+      width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);color:#b7bab2;cursor:pointer
+    }
+    .menu-btn{display:none}.menu-btn svg,.icon-btn svg{width:18px;height:18px;stroke:currentColor}
+    .icon-btn{display:grid;place-items:center}
+    .page-title h1{font-family:"Playfair Display",serif;font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.03em}
+    .page-title p{margin-top:5px;color:var(--muted);font-size:.83rem}
+    .topbar-actions{display:flex;align-items:center;gap:9px}
+    .profile{
+      min-width:165px;height:46px;padding:4px 10px 4px 5px;border-radius:14px;display:flex;align-items:center;gap:9px;
+      border:1px solid var(--border);background:var(--panel)
+    }
+    .avatar{
+      width:36px;height:36px;border-radius:11px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-weight:800;font-size:.8rem
+    }
+    .profile strong{display:block;font-size:.78rem}.profile span{display:block;margin-top:2px;color:#7f817b;font-size:.68rem}
+    .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:16px}
+    .kpi{
+      padding:15px;border-radius:17px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border)
+    }
+    .kpi span{color:#7b7e77;font-size:.64rem}.kpi strong{display:block;margin-top:7px;font-size:1.15rem}
+    .kpi small{display:block;margin-top:4px;color:var(--green);font-size:.61rem}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:17px;align-items:start}
+    .stack{display:grid;gap:16px}
+    .card{
+      border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid var(--border);box-shadow:0 14px 34px rgba(0,0,0,.18)
+    }
+    .section-card{padding:20px}
+    .section-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:17px}
+    .section-head h3{font-size:.98rem}.section-head p{margin-top:4px;color:#7f827b;font-size:.7rem}
+    .tag{padding:6px 9px;border-radius:999px;color:#e4ca92;background:rgba(216,184,117,.08);font-size:.61rem;font-weight:700}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+    .form-grid.three{grid-template-columns:repeat(3,1fr)}.full{grid-column:1/-1}
+    label{display:block;margin-bottom:7px;color:#c7c9c1;font-size:.7rem;font-weight:600}
+    input,select,textarea{
+      width:100%;border-radius:13px;border:1px solid rgba(255,255,255,.09);background:rgba(0,0,0,.13);
+      color:var(--text);outline:none
+    }
+    input,select{height:47px;padding:0 13px}textarea{min-height:96px;padding:12px;resize:vertical}
+    input::placeholder,textarea::placeholder{color:#666961}
+    input:focus,select:focus,textarea:focus{border-color:rgba(216,184,117,.48);box-shadow:0 0 0 4px rgba(216,184,117,.07)}
+    select option{background:#171813}
+    .source-grid,.interest-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+    .source,.interest{
+      padding:13px;border-radius:14px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);
+      cursor:pointer;position:relative;transition:.2s
+    }
+    .source:hover,.interest:hover{border-color:rgba(216,184,117,.22);transform:translateY(-2px)}
+    .source.selected,.interest.selected{background:rgba(216,184,117,.075);border-color:rgba(216,184,117,.27)}
+    .checkmark{
+      display:none;position:absolute;right:9px;top:9px;width:20px;height:20px;border-radius:7px;
+      place-items:center;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#17150f;font-size:.66rem;font-weight:900
+    }
+    .selected .checkmark{display:grid}
+    .source-icon,.interest-icon{
+      width:35px;height:35px;border-radius:11px;display:grid;place-items:center;
+      background:rgba(216,184,117,.08);color:var(--gold);margin-bottom:10px
+    }
+    .source-icon svg,.interest-icon svg{width:17px;height:17px;stroke:currentColor}
+    .source strong,.interest strong{font-size:.7rem}.source span,.interest span{display:block;margin-top:4px;color:#767970;font-size:.6rem;line-height:1.4}
+    .budget-options{display:flex;flex-wrap:wrap;gap:8px}
+    .budget{
+      min-height:37px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.07);
+      background:rgba(255,255,255,.025);color:#91948c;font-size:.66rem;cursor:pointer
+    }
+    .budget.selected{color:#ecd7a4;background:rgba(216,184,117,.09);border-color:rgba(216,184,117,.2)}
+    .package-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .package{
+      padding:15px;border-radius:15px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025);
+      cursor:pointer;position:relative
+    }
+    .package.selected{background:rgba(216,184,117,.07);border-color:rgba(216,184,117,.25)}
+    .package strong{font-size:.72rem}.package span{display:block;margin-top:5px;color:#777a73;font-size:.61rem;line-height:1.45}
+    .package .price{margin-top:9px;color:#dfc78f;font-weight:700}
+    .side-card{position:sticky;top:18px;overflow:hidden}
+    .lead-hero{
+      min-height:160px;padding:20px;background:
+        linear-gradient(to bottom,rgba(10,11,9,.2),rgba(10,11,9,.9)),
+        url("https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display:flex;flex-direction:column;justify-content:flex-end
+    }
+    .lead-hero small{color:#d7c496;text-transform:uppercase;letter-spacing:.1em;font-size:.61rem}
+    .lead-hero h3{margin-top:6px;font-family:"Playfair Display",serif;font-size:1.48rem}
+    .side-body{padding:18px}
+    .score-card{
+      padding:15px;border-radius:15px;background:rgba(216,184,117,.06);border:1px solid rgba(216,184,117,.11)
+    }
+    .score-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .score-top span{color:#777a73;font-size:.64rem}.score-top strong{color:#ecd59f;font-size:1rem}
+    .score-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.055);margin-top:11px;overflow:hidden}
+    .score-fill{height:100%;width:78%;border-radius:inherit;background:linear-gradient(90deg,var(--gold2),var(--gold))}
+    .score-card small{display:block;margin-top:8px;color:var(--green);font-size:.61rem}
+    .summary-row{
+      display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.055);font-size:.69rem
+    }
+    .summary-row span{color:#7f827b}.summary-row strong{text-align:right;color:#d4d4cc}
+    .value-box{
+      margin-top:12px;padding:13px;border-radius:14px;background:rgba(255,255,255,.025);
+      border:1px solid rgba(255,255,255,.05)
+    }
+    .value-row{display:flex;justify-content:space-between;padding:5px 0;color:#858880;font-size:.67rem}
+    .value-row.total{padding-top:11px;margin-top:5px;border-top:1px solid rgba(255,255,255,.06);color:#ecd59f;font-size:.88rem;font-weight:700}
+    .next-step{
+      margin-top:12px;padding:12px;border-radius:13px;background:rgba(126,166,219,.055);
+      border:1px solid rgba(126,166,219,.11);font-size:.65rem;line-height:1.55;color:#aaa69d
+    }
+    .actions{display:grid;gap:8px;margin-top:14px}
+    .primary,.secondary{
+      min-height:47px;border-radius:12px;font-weight:700;cursor:pointer
+    }
+    .primary{border:0;background:linear-gradient(135deg,#eed89f,var(--gold),var(--gold2));color:#17150f}
+    .secondary{border:1px solid var(--border);background:rgba(255,255,255,.03);color:#b3b6ae}
+    .footer{margin-top:20px;display:flex;justify-content:space-between;gap:16px;color:#666962;font-size:.67rem}
+    .toast{
+      position:fixed;right:22px;bottom:22px;z-index:50;min-width:300px;max-width:calc(100vw - 44px);
+      padding:14px;border-radius:14px;background:rgba(20,22,18,.97);border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 18px 48px rgba(0,0,0,.45);transform:translateY(130%);opacity:0;transition:.3s;font-size:.76rem
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+    @media(max-width:1220px){.layout{grid-template-columns:1fr}.side-card{position:static}.side-card{display:grid;grid-template-columns:300px 1fr}.lead-hero{min-height:100%}.kpis{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:1080px){
+      .app{grid-template-columns:82px minmax(0,1fr)}.sidebar{padding:20px 12px}.logo{justify-content:center;padding-inline:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:none}.nav-item{justify-content:center;padding:0}.nav-item.active:before{left:-12px}
+      .source-grid,.interest-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:760px){
+      .app{display:block}.sidebar{position:fixed;left:-270px;width:250px;transition:.25s}.sidebar.open{left:0}
+      .logo-title,.logo-sub,.nav-label,.nav-item span,.badge,.branch-card{display:block}.nav-item{justify-content:flex-start;padding:0 13px}
+      .main{padding:18px 14px 28px}.menu-btn{display:grid;place-items:center}.profile div:not(.avatar){display:none}.profile{min-width:auto;padding-right:5px}
+      .kpis{grid-template-columns:repeat(2,1fr)}.form-grid,.form-grid.three{grid-template-columns:1fr}
+      .package-grid{grid-template-columns:1fr}.side-card{display:block}
+    }
+    @media(max-width:480px){.kpis,.source-grid,.interest-grid{grid-template-columns:1fr}.footer{flex-direction:column}}
+  </style>
+</head>
+
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+          <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+        </svg>
+      </div>
+      <div><div class="logo-title">Nexilo Spa<br>Management</div><span class="logo-sub">Powered by Nexilo</span></div>
+    </div>
+
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Calendar</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg><span>Reservation List</span></a>
+    </nav>
+
+    <div class="nav-label">Sales & CRM</div>
+    <nav class="nav">
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/><circle cx="18" cy="18" r="3"/></svg><span>Sales Enquiry</span><b class="badge">12</b></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M6 3h12v18H6z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg><span>Sales Follow-up</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7 0"/></svg><span>Customers</span></a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 20h18M5 18V9M10 18V4M15 18v-6M20 18V7"/></svg><span>Sales Pipeline</span></a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="branch-card"><small>Sales Branch</small><strong>Serenity Downtown</strong><span>Doha • CRM desk active</span></div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-btn" id="menuBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+        <div class="page-title"><h1>Sales Enquiry</h1><p>Capture prospect needs, qualify interest, assign ownership, and prepare the next conversion step.</p></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+        <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+        <div class="profile"><div class="avatar">RS</div><div><strong>Riya Shah</strong><span>Sales Coordinator</span></div></div>
+      </div>
+    </header>
+
+    <section class="kpis">
+      <article class="kpi"><span>New Enquiries Today</span><strong>12</strong><small>+3 from yesterday</small></article>
+      <article class="kpi"><span>High-Priority Leads</span><strong>5</strong><small>2 require action today</small></article>
+      <article class="kpi"><span>Follow-ups Due</span><strong>8</strong><small>Next due at 4:30 PM</small></article>
+      <article class="kpi"><span>Expected Pipeline</span><strong>QAR 18.6K</strong><small>Across open opportunities</small></article>
+      <article class="kpi"><span>Conversion Rate</span><strong>34%</strong><small>+6% this month</small></article>
+    </section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Prospect Information</h3><p>Capture contact details and identify whether this is a new or existing customer.</p></div>
+            <span class="tag">New Lead</span>
+          </div>
+
+          <div class="form-grid">
+            <div><label>Prospect Name</label><input type="text" value="Amina Rahman"></div>
+            <div><label>Mobile Number</label><input type="text" value="+974 5518 9042"></div>
+            <div><label>Email Address</label><input type="email" value="amina.rahman@example.com"></div>
+            <div><label>Customer Type</label><select><option>New Prospect</option><option>Existing Customer</option><option>Member</option><option>Corporate Contact</option></select></div>
+            <div><label>Preferred Language</label><select><option>English</option><option>Arabic</option><option>Hindi</option><option>Malayalam</option></select></div>
+            <div><label>Preferred Communication</label><select><option>WhatsApp</option><option>Phone Call</option><option>Email</option><option>SMS</option></select></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Enquiry Source</h3><p>Track where the prospect discovered the spa or promotion.</p></div>
+          </div>
+
+          <div class="source-grid">
+            <article class="source selected"><span class="checkmark">✓</span><div class="source-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="m5 7 7 5 7-5"/></svg></div><strong>WhatsApp</strong><span>Direct enquiry received through spa WhatsApp.</span></article>
+            <article class="source"><span class="checkmark">✓</span><div class="source-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></div><strong>Instagram</strong><span>Campaign, reel, story, or profile enquiry.</span></article>
+            <article class="source"><span class="checkmark">✓</span><div class="source-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></div><strong>Website</strong><span>Lead submitted from website or landing page.</span></article>
+            <article class="source"><span class="checkmark">✓</span><div class="source-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 4h4l2 5-3 2a14 14 0 0 0 5 5l2-3 5 2v4c0 1-1 2-2 2C10 21 3 14 3 6c0-1 1-2 2-2Z"/></svg></div><strong>Phone Call</strong><span>Inbound call to reception or sales desk.</span></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Interest & Requirement</h3><p>Select the services or programmes the prospect is considering.</p></div>
+            <span class="tag">Multiple Selection</span>
+          </div>
+
+          <div class="interest-grid">
+            <article class="interest selected"><span class="checkmark">✓</span><div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M7 18c0-4 2-7 5-10 3 3 5 6 5 10"/><path d="M4 20h16"/></svg></div><strong>Hammam & Body</strong><span>Luxury hammam and body rituals.</span></article>
+            <article class="interest selected"><span class="checkmark">✓</span><div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 12h14M8 7v10M16 7v10"/><circle cx="12" cy="12" r="9"/></svg></div><strong>Massage</strong><span>Relaxation and therapeutic treatments.</span></article>
+            <article class="interest"><span class="checkmark">✓</span><div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M9 10h.01M15 10h.01M9 15c2 1 4 1 6 0"/></svg></div><strong>Facial</strong><span>Hydration, anti-ageing, and renewal.</span></article>
+            <article class="interest"><span class="checkmark">✓</span><div class="interest-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20 4.8 13A4.7 4.7 0 0 1 11 6l1 1 1-1a4.7 4.7 0 0 1 6.2 7L12 20Z"/></svg></div><strong>Couple Package</strong><span>Private couple suite and spa ritual.</span></article>
+          </div>
+
+          <div class="form-grid" style="margin-top:14px">
+            <div class="full"><label>Detailed Requirement</label><textarea>Looking for a premium 3-month wellness package including hammam, massage, and facial sessions. Prospect is also interested in a couple spa experience for an anniversary in August.</textarea></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Budget & Package Preference</h3><p>Qualify spending potential and shortlist suitable offers.</p></div>
+          </div>
+
+          <label>Estimated Budget</label>
+          <div class="budget-options">
+            <button class="budget">Below QAR 500</button>
+            <button class="budget">QAR 500–1,000</button>
+            <button class="budget selected">QAR 1,000–3,000</button>
+            <button class="budget">QAR 3,000–5,000</button>
+            <button class="budget">Above QAR 5,000</button>
+          </div>
+
+          <div class="package-grid" style="margin-top:14px">
+            <article class="package selected" data-value="2800"><span class="checkmark">✓</span><strong>Wellness Signature 12</strong><span>12 treatments across massage, hammam, and facial categories.</span><span class="price">QAR 2,800</span></article>
+            <article class="package" data-value="1650"><span class="checkmark">✓</span><strong>Relax & Renew 6</strong><span>Six premium sessions valid for three months.</span><span class="price">QAR 1,650</span></article>
+            <article class="package" data-value="980"><span class="checkmark">✓</span><strong>Couple Signature Day</strong><span>Private couple ritual with refreshments and lounge access.</span><span class="price">QAR 980</span></article>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Sales Qualification</h3><p>Assess urgency, readiness, and conversion probability.</p></div>
+          </div>
+
+          <div class="form-grid three">
+            <div><label>Lead Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+            <div><label>Buying Timeline</label><select><option>Within 7 Days</option><option>Within 30 Days</option><option>1–3 Months</option><option>Future Interest</option></select></div>
+            <div><label>Decision Status</label><select><option>Comparing Options</option><option>Ready to Book</option><option>Needs Consultation</option><option>Price Sensitive</option></select></div>
+            <div><label>Preferred Visit Date</label><input type="date" value="2026-07-25"></div>
+            <div><label>Preferred Time</label><select><option>05:30 PM</option><option>04:00 PM</option><option>06:00 PM</option><option>Flexible</option></select></div>
+            <div><label>Consultation Type</label><select><option>Phone Consultation</option><option>In-Spa Consultation</option><option>WhatsApp Discussion</option><option>Email Proposal</option></select></div>
+          </div>
+        </section>
+
+        <section class="card section-card">
+          <div class="section-head">
+            <div><h3>Ownership & Follow-up</h3><p>Assign the enquiry and define the next sales activity.</p></div>
+          </div>
+
+          <div class="form-grid three">
+            <div><label>Assigned Sales Executive</label><select><option>Riya Shah</option><option>Amal Joseph</option><option>Sarah Khan</option><option>Reception Team</option></select></div>
+            <div><label>Next Follow-up Date</label><input type="date" value="2026-07-21"></div>
+            <div><label>Follow-up Time</label><input type="time" value="11:30"></div>
+            <div><label>Follow-up Method</label><select><option>WhatsApp</option><option>Phone Call</option><option>Email</option><option>In-Person</option></select></div>
+            <div><label>Enquiry Stage</label><select><option>Qualified Lead</option><option>New Enquiry</option><option>Proposal Shared</option><option>Negotiation</option></select></div>
+            <div><label>Reminder</label><select><option>30 Minutes Before</option><option>1 Hour Before</option><option>1 Day Before</option><option>No Reminder</option></select></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="card side-card">
+        <div class="lead-hero">
+          <small>Enquiry Preview</small>
+          <h3>Amina Rahman</h3>
+        </div>
+
+        <div class="side-body">
+          <div class="score-card">
+            <div class="score-top"><span>Lead Qualification Score</span><strong>78 / 100</strong></div>
+            <div class="score-bar"><div class="score-fill"></div></div>
+            <small>High-potential lead • Follow up within 24 hours</small>
+          </div>
+
+          <div class="summary-row"><span>Lead ID</span><strong>ENQ-260720-012</strong></div>
+          <div class="summary-row"><span>Source</span><strong>WhatsApp</strong></div>
+          <div class="summary-row"><span>Priority</span><strong style="color:var(--orange)">High</strong></div>
+          <div class="summary-row"><span>Stage</span><strong>Qualified Lead</strong></div>
+          <div class="summary-row"><span>Owner</span><strong>Riya Shah</strong></div>
+          <div class="summary-row"><span>Follow-up</span><strong>21 Jul • 11:30 AM</strong></div>
+
+          <div class="value-box">
+            <div class="value-row"><span>Selected Package</span><strong id="packageValue">QAR 2,800</strong></div>
+            <div class="value-row"><span>Additional Couple Package</span><strong>QAR 980</strong></div>
+            <div class="value-row total"><span>Potential Value</span><strong id="potentialValue">QAR 3,780</strong></div>
+          </div>
+
+          <div class="next-step">Recommended next step: Share the Wellness Signature 12 brochure through WhatsApp, offer a complimentary consultation, and hold a preferred slot for 25 July 2026.</div>
+
+          <div class="actions">
+            <button class="primary" id="saveBtn">Save Enquiry</button>
+            <button class="secondary" id="proposalBtn">Save & Send Proposal</button>
+            <button class="secondary" id="convertBtn">Convert to Reservation</button>
+            <button class="secondary" id="draftBtn">Save as Draft</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="footer"><span>Nexilo Spa Management • Powered by Nexilo</span><span>Sales CRM workspace • Lead scoring enabled</span></footer>
+  </main>
+</div>
+
+<div class="toast" id="toast">Action completed.</div>
+
+<script>
+  const sidebar=document.getElementById("sidebar");
+  const menuBtn=document.getElementById("menuBtn");
+  const toast=document.getElementById("toast");
+
+  function showToast(message){
+    toast.textContent=message;
+    toast.classList.add("show");
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
+  }
+
+  menuBtn.addEventListener("click",()=>sidebar.classList.toggle("open"));
+
+  document.addEventListener("click",event=>{
+    if(window.innerWidth<=760&&!sidebar.contains(event.target)&&!menuBtn.contains(event.target)){
+      sidebar.classList.remove("open");
+    }
+  });
+
+  document.querySelectorAll(".source").forEach(item=>{
+    item.addEventListener("click",()=>{
+      document.querySelectorAll(".source").forEach(source=>source.classList.remove("selected"));
+      item.classList.add("selected");
+    });
+  });
+
+  document.querySelectorAll(".interest").forEach(item=>{
+    item.addEventListener("click",()=>item.classList.toggle("selected"));
+  });
+
+  document.querySelectorAll(".budget").forEach(item=>{
+    item.addEventListener("click",()=>{
+      document.querySelectorAll(".budget").forEach(b=>b.classList.remove("selected"));
+      item.classList.add("selected");
+    });
+  });
+
+  document.querySelectorAll(".package").forEach(item=>{
+    item.addEventListener("click",()=>{
+      document.querySelectorAll(".package").forEach(p=>p.classList.remove("selected"));
+      item.classList.add("selected");
+      const amount=Number(item.dataset.value);
+      document.getElementById("packageValue").textContent="QAR "+amount.toLocaleString();
+      document.getElementById("potentialValue").textContent="QAR "+(amount+980).toLocaleString();
+    });
+  });
+
+  document.getElementById("saveBtn").addEventListener("click",()=>showToast("Sales enquiry saved and follow-up scheduled."));
+  document.getElementById("proposalBtn").addEventListener("click",()=>showToast("Enquiry saved and proposal message prepared."));
+  document.getElementById("convertBtn").addEventListener("click",()=>showToast("Reservation conversion workflow opened."));
+  document.getElementById("draftBtn").addEventListener("click",()=>showToast("Sales enquiry saved as draft."));
+</script>
+</body>
+</html>

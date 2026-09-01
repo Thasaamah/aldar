@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10110f" />
+  <title>Nexilo Spa Management | New Reservation</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0e0f0d;
+      --panel: rgba(255,255,255,.055);
+      --panel-border: rgba(255,255,255,.09);
+      --text: #f7f3ea;
+      --muted: #a8aaa3;
+      --gold: #d9b975;
+      --gold-2: #b68c46;
+      --sage: #8fa692;
+      --green: #83c98e;
+      --orange: #e3a45d;
+      --red: #e77e7e;
+      --blue: #7ea6db;
+      --shadow: 0 24px 60px rgba(0,0,0,.34);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: "DM Sans", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(216,184,117,.1), transparent 25%),
+        radial-gradient(circle at 100% 100%, rgba(143,166,146,.1), transparent 25%),
+        var(--bg);
+    }
+
+    button, input, select, textarea { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 250px minmax(0,1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--panel-border);
+      background: rgba(17,18,15,.94);
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 8px 24px;
+    }
+
+    .logo-mark {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 15px;
+      background: linear-gradient(145deg, rgba(216,184,117,.2), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .logo-mark svg { width: 26px; height: 26px; stroke: var(--gold); }
+    .logo-title { font-weight: 700; line-height: 1.15; font-size: .98rem; }
+    .logo-sub {
+      display: block;
+      margin-top: 3px;
+      font-size: .66rem;
+      color: #797c75;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .nav-label {
+      padding: 12px 12px 8px;
+      font-size: .68rem;
+      color: #696b65;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .nav { display: grid; gap: 6px; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 46px;
+      padding: 0 13px;
+      border-radius: 13px;
+      color: #a7aaa2;
+      font-size: .87rem;
+      position: relative;
+      transition: .2s ease;
+    }
+
+    .nav-item svg { width: 19px; height: 19px; stroke: currentColor; flex: 0 0 auto; }
+    .nav-item:hover { color: #e4ddcf; background: rgba(255,255,255,.04); }
+
+    .nav-item.active {
+      color: #f4e4bc;
+      background: linear-gradient(90deg, rgba(216,184,117,.15), rgba(216,184,117,.05));
+      border: 1px solid rgba(216,184,117,.14);
+    }
+
+    .nav-item.active::before {
+      content: "";
+      position: absolute;
+      left: -1px;
+      top: 10px;
+      bottom: 10px;
+      width: 3px;
+      border-radius: 4px;
+      background: var(--gold);
+    }
+
+    .sidebar-bottom { margin-top: auto; }
+    .branch-card {
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.025));
+      border: 1px solid var(--panel-border);
+    }
+
+    .branch-card small {
+      color: #777a73;
+      font-size: .69rem;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+    }
+
+    .branch-card strong { display: block; margin-top: 5px; font-size: .87rem; }
+    .branch-card span { display: block; margin-top: 4px; color: #92958d; font-size: .76rem; }
+
+    .main { min-width: 0; padding: 24px 26px 34px; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .menu-btn {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .page-title h1 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(1.8rem,3vw,2.55rem);
+      letter-spacing: -.03em;
+    }
+
+    .page-title p { margin-top: 5px; color: var(--muted); font-size: .84rem; }
+    .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+    .icon-btn, .profile, .back-btn {
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+    }
+
+    .icon-btn, .back-btn {
+      min-height: 42px;
+      border-radius: 12px;
+      color: #b7bab2;
+      cursor: pointer;
+    }
+
+    .icon-btn { width: 42px; display: grid; place-items: center; }
+    .icon-btn svg, .back-btn svg { width: 18px; height: 18px; stroke: currentColor; }
+
+    .back-btn {
+      padding: 0 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .74rem;
+    }
+
+    .profile {
+      min-width: 165px;
+      height: 46px;
+      padding: 4px 10px 4px 5px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg,var(--gold),var(--gold-2));
+      color: #17150f;
+      font-weight: 800;
+      font-size: .82rem;
+    }
+
+    .profile strong { display: block; font-size: .79rem; }
+    .profile span { display: block; margin-top: 2px; color: #7f817b; font-size: .69rem; }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .step {
+      padding: 13px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-border);
+      background: rgba(255,255,255,.035);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #777a73;
+    }
+
+    .step.active {
+      color: #f0ddae;
+      border-color: rgba(216,184,117,.2);
+      background: rgba(216,184,117,.07);
+    }
+
+    .step.done { color: #b9d0bc; }
+
+    .step-no {
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,255,255,.045);
+      font-size: .72rem;
+      font-weight: 800;
+    }
+
+    .step.active .step-no {
+      color: #17150f;
+      background: linear-gradient(135deg,var(--gold),var(--gold-2));
+    }
+
+    .step.done .step-no {
+      background: rgba(131,201,142,.12);
+      color: var(--green);
+    }
+
+    .step strong { display: block; font-size: .75rem; }
+    .step span { display: block; margin-top: 3px; font-size: .62rem; color: #70736c; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) 350px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .card {
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 14px 34px rgba(0,0,0,.18);
+    }
+
+    .form-stack { display: grid; gap: 16px; }
+    .section-card { padding: 20px; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .section-head h3 { font-size: 1rem; }
+    .section-head p { margin-top: 4px; color: #858880; font-size: .72rem; }
+
+    .section-tag {
+      padding: 6px 9px;
+      border-radius: 999px;
+      color: #e4ca92;
+      background: rgba(216,184,117,.08);
+      font-size: .63rem;
+      font-weight: 700;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 14px;
+    }
+
+    .form-grid.three { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #c7c9c1;
+      font-size: .72rem;
+      font-weight: 600;
+    }
+
+    .input-wrap { position: relative; }
+
+    input, select, textarea {
+      width: 100%;
+      border-radius: 13px;
+      border: 1px solid rgba(255,255,255,.1);
+      background: rgba(0,0,0,.13);
+      color: var(--text);
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input, select { height: 48px; padding: 0 13px; }
+    textarea { min-height: 92px; padding: 13px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #686b64; }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(216,184,117,.55);
+      box-shadow: 0 0 0 4px rgba(216,184,117,.08);
+    }
+
+    select option { background: #171813; }
+
+    .customer-result {
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 15px;
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 11px;
+      align-items: center;
+      background: rgba(143,166,146,.055);
+      border: 1px solid rgba(143,166,146,.12);
+    }
+
+    .customer-result .avatar {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg,rgba(216,184,117,.24),rgba(143,166,146,.16));
+      color: #ead6a5;
+    }
+
+    .customer-result strong { font-size: .78rem; }
+    .customer-result span { display: block; margin-top: 3px; color: #82857e; font-size: .66rem; }
+
+    .pill {
+      padding: 6px 8px;
+      border-radius: 999px;
+      font-size: .61rem;
+      font-weight: 700;
+      color: #e4ca92;
+      background: rgba(216,184,117,.08);
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .service-option, .resource-option, .addon {
+      position: relative;
+      padding: 14px;
+      border-radius: 15px;
+      border: 1px solid rgba(255,255,255,.075);
+      background: rgba(255,255,255,.028);
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .service-option:hover, .resource-option:hover, .addon:hover {
+      border-color: rgba(216,184,117,.23);
+      transform: translateY(-2px);
+    }
+
+    .service-option.selected, .resource-option.selected, .addon.selected {
+      background: rgba(216,184,117,.075);
+      border-color: rgba(216,184,117,.3);
+      box-shadow: inset 0 0 0 1px rgba(216,184,117,.07);
+    }
+
+    .service-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background: rgba(216,184,117,.08);
+      margin-bottom: 11px;
+    }
+
+    .service-icon svg { width: 18px; height: 18px; stroke: currentColor; }
+    .service-option strong, .resource-option strong, .addon strong { font-size: .74rem; }
+    .service-option span, .resource-option span, .addon span {
+      display: block;
+      margin-top: 5px;
+      color: #7d8079;
+      font-size: .63rem;
+      line-height: 1.45;
+    }
+
+    .service-price {
+      margin-top: 9px !important;
+      color: #dec794 !important;
+      font-weight: 700;
+    }
+
+    .selected-check {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: 20px;
+      height: 20px;
+      border-radius: 7px;
+      place-items: center;
+      background: linear-gradient(135deg,var(--gold),var(--gold-2));
+      color: #17150f;
+      font-size: .68rem;
+      font-weight: 900;
+    }
+
+    .selected .selected-check { display: grid; }
+
+    .availability-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .time-slot {
+      min-height: 36px;
+      padding: 0 11px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.075);
+      background: rgba(255,255,255,.025);
+      color: #999c94;
+      font-size: .68rem;
+      cursor: pointer;
+    }
+
+    .time-slot:hover, .time-slot.selected {
+      color: #f1deb2;
+      border-color: rgba(216,184,117,.25);
+      background: rgba(216,184,117,.08);
+    }
+
+    .time-slot.unavailable {
+      opacity: .35;
+      text-decoration: line-through;
+      cursor: not-allowed;
+    }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .resource-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .availability {
+      color: var(--green);
+      font-size: .61rem;
+      font-weight: 700;
+    }
+
+    .addons {
+      display: grid;
+      grid-template-columns: repeat(3,minmax(0,1fr));
+      gap: 10px;
+    }
+
+    .summary-card {
+      position: sticky;
+      top: 18px;
+      overflow: hidden;
+    }
+
+    .summary-hero {
+      min-height: 150px;
+      padding: 20px;
+      background:
+        linear-gradient(to bottom,rgba(11,12,10,.25),rgba(11,12,10,.9)),
+        url("https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=85") center/cover;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .summary-hero small {
+      color: #d7c496;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      font-size: .62rem;
+    }
+
+    .summary-hero h3 {
+      margin-top: 7px;
+      font-family: "Playfair Display", serif;
+      font-size: 1.5rem;
+    }
+
+    .summary-body { padding: 18px; }
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(255,255,255,.055);
+      font-size: .72rem;
+    }
+
+    .summary-line span { color: #7f827b; text-align: right; }
+    .summary-line strong { color: #d8d7cf; text-align: right; }
+    .summary-line.total { border-bottom: 0; padding-top: 16px; }
+    .summary-line.total strong { color: #efd9a7; font-size: 1.15rem; }
+
+    .price-breakdown {
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 5px 0;
+      color: #8d9088;
+      font-size: .68rem;
+    }
+
+    .price-row.discount { color: var(--green); }
+
+    .policy {
+      margin-top: 13px;
+      padding: 11px;
+      border-radius: 12px;
+      background: rgba(227,164,93,.055);
+      border: 1px solid rgba(227,164,93,.1);
+      color: #a9a69d;
+      font-size: .63rem;
+      line-height: 1.55;
+    }
+
+    .actions {
+      display: grid;
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .primary-btn, .secondary-btn {
+      min-height: 48px;
+      border-radius: 13px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .primary-btn {
+      border: 0;
+      color: #17150f;
+      background: linear-gradient(135deg,#eed89f,var(--gold),var(--gold-2));
+      box-shadow: 0 12px 25px rgba(183,143,68,.2);
+    }
+
+    .secondary-btn {
+      border: 1px solid rgba(255,255,255,.08);
+      color: #b9bbb4;
+      background: rgba(255,255,255,.03);
+    }
+
+    .footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      color: #666962;
+      font-size: .67rem;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 50;
+      min-width: 310px;
+      max-width: calc(100vw - 44px);
+      padding: 14px 15px;
+      border-radius: 14px;
+      background: rgba(20,22,18,.97);
+      border: 1px solid rgba(255,255,255,.11);
+      box-shadow: 0 18px 48px rgba(0,0,0,.45);
+      transform: translateY(130%);
+      opacity: 0;
+      transition: .3s ease;
+      font-size: .78rem;
+      color: #e6e3db;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 1200px) {
+      .layout { grid-template-columns: 1fr; }
+      .summary-card { position: static; }
+      .summary-card { display: grid; grid-template-columns: 280px 1fr; }
+      .summary-hero { min-height: 100%; }
+    }
+
+    @media (max-width: 1080px) {
+      .app { grid-template-columns: 82px minmax(0,1fr); }
+      .sidebar { padding: 20px 12px; }
+      .logo { justify-content: center; padding-inline: 0; }
+      .logo-title, .logo-sub, .nav-label, .nav-item span, .branch-card { display: none; }
+      .nav-item { justify-content: center; padding: 0; }
+      .nav-item.active::before { left: -12px; }
+      .service-grid, .addons { grid-template-columns: repeat(2,1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar {
+        position: fixed;
+        left: -270px;
+        width: 250px;
+        transition: .25s ease;
+      }
+      .sidebar.open { left: 0; }
+      .logo-title, .logo-sub, .nav-label, .nav-item span, .branch-card { display: block; }
+      .nav-item { justify-content: flex-start; padding: 0 13px; }
+      .main { padding: 18px 14px 28px; }
+      .menu-btn { display: grid; place-items: center; }
+      .profile div:not(.avatar) { display: none; }
+      .profile { min-width: auto; padding-right: 5px; }
+      .back-btn span { display: none; }
+      .steps { grid-template-columns: repeat(2,1fr); }
+      .form-grid, .form-grid.three, .resource-grid { grid-template-columns: 1fr; }
+      .summary-card { display: block; }
+    }
+
+    @media (max-width: 500px) {
+      .service-grid, .addons { grid-template-columns: 1fr; }
+      .customer-result { grid-template-columns: 42px 1fr; }
+      .customer-result .pill { grid-column: 2; width: fit-content; }
+      .footer { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <div class="logo-mark">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 21c4.7-2.9 7-6.4 7-10.4 0-2.8-1.6-4.7-4.3-5.8-.4 2.8-1.3 4.7-2.7 5.8C10.6 9.5 9.7 7.6 9.3 4.8 6.6 5.9 5 7.8 5 10.6 5 14.6 7.3 18.1 12 21Z"/>
+            <path d="M8.2 13.2c1.3.3 2.6.9 3.8 1.9 1.2-1 2.5-1.6 3.8-1.9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="logo-title">Nexilo Spa<br>Management</div>
+          <span class="logo-sub">Powered by Nexilo</span>
+        </div>
+      </div>
+
+      <div class="nav-label">Workspace</div>
+      <nav class="nav">
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Management</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 12h16M12 4v16"/><circle cx="12" cy="12" r="8"/></svg><span>Reception</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16"/></svg><span>Calendar</span></a>
+        <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 5h16v15H4z"/><path d="M8 3v4M16 3v4M4 10h16M12 13v4M10 15h4"/></svg><span>New Reservation</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><path d="M3 20a6 6 0 0 1 12 0M14 20a4 4 0 0 1 7 0"/></svg><span>Customers</span></a>
+      </nav>
+
+      <div class="nav-label">Operations</div>
+      <nav class="nav">
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="7" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Therapists</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12h8M12 8v8"/></svg><span>Spa Floor</span></a>
+        <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h3"/></svg><span>Billing & POS</span></a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="branch-card">
+          <small>Booking Branch</small>
+          <strong>Serenity Downtown</strong>
+          <span>Doha • Front Desk 01</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+          </button>
+          <div class="page-title">
+            <h1>New Reservation</h1>
+            <p>Create a personalized spa booking with live resource availability and pricing.</p>
+          </div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="m15 18-6-6 6-6"/></svg><span>Back to Calendar</span></button>
+          <button class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+          <div class="profile">
+            <div class="avatar">RS</div>
+            <div><strong>Riya Shah</strong><span>Reception Executive</span></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="steps">
+        <div class="step done"><div class="step-no">✓</div><div><strong>Customer</strong><span>Guest details</span></div></div>
+        <div class="step active"><div class="step-no">2</div><div><strong>Service</strong><span>Treatment selection</span></div></div>
+        <div class="step"><div class="step-no">3</div><div><strong>Schedule</strong><span>Time and resources</span></div></div>
+        <div class="step"><div class="step-no">4</div><div><strong>Confirm</strong><span>Review and reserve</span></div></div>
+      </section>
+
+      <div class="layout">
+        <div class="form-stack">
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Customer Information</h3><p>Search an existing guest or register a new customer.</p></div>
+              <span class="section-tag">Existing Customer</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field full">
+                <label>Search Customer</label>
+                <input type="text" value="Fatima Al Nuaimi" placeholder="Search by name, mobile number, email, or membership ID">
+                <div class="customer-result">
+                  <div class="avatar">FA</div>
+                  <div><strong>Fatima Al Nuaimi</strong><span>+974 5558 2410 • fatima@example.com • 18 previous visits</span></div>
+                  <span class="pill">Gold Member</span>
+                </div>
+              </div>
+              <div>
+                <label>Mobile Number</label>
+                <input type="text" value="+974 5558 2410">
+              </div>
+              <div>
+                <label>Booking Source</label>
+                <select><option>WhatsApp</option><option>Phone Call</option><option>Website</option><option>Walk-In</option><option>Mobile App</option></select>
+              </div>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Select Service</h3><p>Choose the primary treatment or package for this reservation.</p></div>
+              <span class="section-tag">Popular Services</span>
+            </div>
+
+            <div class="service-grid">
+              <article class="service-option selected" data-price="620" data-name="Luxury Hammam">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M7 18c0-4 2-7 5-10 3 3 5 6 5 10"/><path d="M4 20h16M9 7c0-2 1-3 3-4 2 1 3 2 3 4"/></svg></div>
+                <strong>Luxury Hammam</strong><span>Traditional cleansing ritual with steam and premium body treatment.</span><span class="service-price">90 min • QAR 620</span>
+              </article>
+
+              <article class="service-option" data-price="450" data-name="Deep Tissue Massage">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M5 12h14M8 7v10M16 7v10"/><circle cx="12" cy="12" r="9"/></svg></div>
+                <strong>Deep Tissue Massage</strong><span>Focused therapeutic massage for muscle tension and recovery.</span><span class="service-price">60 min • QAR 450</span>
+              </article>
+
+              <article class="service-option" data-price="380" data-name="Aromatherapy Ritual">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 21c4-3 6-6 6-10a6 6 0 0 0-12 0c0 4 2 7 6 10Z"/><path d="M9 13c2-1 4-1 6 0"/></svg></div>
+                <strong>Aromatherapy Ritual</strong><span>Relaxing massage using a personalized essential-oil blend.</span><span class="service-price">75 min • QAR 380</span>
+              </article>
+
+              <article class="service-option" data-price="520" data-name="Gold Renewal Facial">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M9 10h.01M15 10h.01M9 15c2 1 4 1 6 0"/></svg></div>
+                <strong>Gold Renewal Facial</strong><span>Premium brightening facial with gold serum and hydration mask.</span><span class="service-price">60 min • QAR 520</span>
+              </article>
+
+              <article class="service-option" data-price="980" data-name="Couple Signature Ritual">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 20 4.8 13A4.7 4.7 0 0 1 11 6l1 1 1-1a4.7 4.7 0 0 1 6.2 7L12 20Z"/></svg></div>
+                <strong>Couple Signature Ritual</strong><span>Private couple suite, massage, refreshments, and relaxation time.</span><span class="service-price">120 min • QAR 980</span>
+              </article>
+
+              <article class="service-option" data-price="250" data-name="Express Foot Spa">
+                <span class="selected-check">✓</span>
+                <div class="service-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M7 4c0 6-2 8-2 11a4 4 0 0 0 8 0c0-2-1-3-1-5"/><path d="M15 5c0 5-1 7-1 10a4 4 0 0 0 8 0"/></svg></div>
+                <strong>Express Foot Spa</strong><span>Quick revitalizing soak, exfoliation, massage, and hydration.</span><span class="service-price">40 min • QAR 250</span>
+              </article>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Reservation Schedule</h3><p>Select the preferred date and an available appointment time.</p></div>
+              <span class="section-tag">Live Availability</span>
+            </div>
+
+            <div class="form-grid three">
+              <div><label>Reservation Date</label><input type="date" value="2026-07-20"></div>
+              <div><label>Preferred Start Time</label><select><option>03:30 PM</option><option>04:00 PM</option><option>04:30 PM</option></select></div>
+              <div><label>Number of Guests</label><select><option>1 Guest</option><option>2 Guests</option><option>3 Guests</option></select></div>
+            </div>
+
+            <div class="availability-strip">
+              <button class="time-slot unavailable">02:30 PM</button>
+              <button class="time-slot unavailable">03:00 PM</button>
+              <button class="time-slot selected">03:30 PM</button>
+              <button class="time-slot">04:00 PM</button>
+              <button class="time-slot">04:30 PM</button>
+              <button class="time-slot">05:15 PM</button>
+              <button class="time-slot">06:00 PM</button>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Assign Therapist & Room</h3><p>Choose from resources available for the selected service and time.</p></div>
+              <span class="section-tag">Auto-Match Available</span>
+            </div>
+
+            <div class="resource-grid">
+              <article class="resource-option selected">
+                <span class="selected-check">✓</span>
+                <div class="resource-top"><strong>Noor Ahmed</strong><span class="availability">Available</span></div>
+                <span>Hammam Specialist • 4.9 ★ • 94% customer satisfaction</span>
+              </article>
+              <article class="resource-option">
+                <span class="selected-check">✓</span>
+                <div class="resource-top"><strong>Amal Joseph</strong><span class="availability">Available</span></div>
+                <span>Massage & Hammam • 4.8 ★ • Available until 5:30 PM</span>
+              </article>
+              <article class="resource-option selected">
+                <span class="selected-check">✓</span>
+                <div class="resource-top"><strong>Room R04</strong><span class="availability">Ready</span></div>
+                <span>Moroccan Bath Suite • Steam • Premium setup</span>
+              </article>
+              <article class="resource-option">
+                <span class="selected-check">✓</span>
+                <div class="resource-top"><strong>Room R08</strong><span class="availability">Ready</span></div>
+                <span>Hammam Suite • Standard setup • Near reception</span>
+              </article>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Add-ons & Guest Preferences</h3><p>Personalize the reservation and capture preparation instructions.</p></div>
+            </div>
+
+            <div class="addons">
+              <article class="addon selected" data-addon="80"><span class="selected-check">✓</span><strong>Argan Oil Upgrade</strong><span>Premium organic argan oil • QAR 80</span></article>
+              <article class="addon" data-addon="65"><span class="selected-check">✓</span><strong>Herbal Tea Ritual</strong><span>Welcome and post-treatment tea • QAR 65</span></article>
+              <article class="addon" data-addon="120"><span class="selected-check">✓</span><strong>Express Facial</strong><span>20-minute hydration facial • QAR 120</span></article>
+            </div>
+
+            <div class="form-grid" style="margin-top:14px">
+              <div><label>Guest Preference</label><select><option>Female Therapist</option><option>Male Therapist</option><option>No Preference</option></select></div>
+              <div><label>Communication Preference</label><select><option>WhatsApp Confirmation</option><option>SMS Confirmation</option><option>Email Confirmation</option></select></div>
+              <div class="field full"><label>Special Notes</label><textarea placeholder="Allergies, health notes, room preferences, birthday setup, VIP instructions...">Customer prefers low room temperature, soft pressure, and jasmine fragrance. Avoid strong eucalyptus oils.</textarea></div>
+            </div>
+          </section>
+
+          <section class="card section-card">
+            <div class="section-head">
+              <div><h3>Payment & Confirmation</h3><p>Set the advance requirement, promotion, and booking status.</p></div>
+            </div>
+
+            <div class="form-grid three">
+              <div><label>Payment Method</label><select><option>Pay at Spa</option><option>Card</option><option>Cash</option><option>Online Payment Link</option><option>Membership Wallet</option></select></div>
+              <div><label>Advance Amount</label><input type="number" value="200"></div>
+              <div><label>Reservation Status</label><select><option>Confirmed</option><option>Pending Confirmation</option><option>Waitlisted</option></select></div>
+              <div><label>Promo / Voucher Code</label><input type="text" value="GOLD10"></div>
+              <div><label>Discount Type</label><select><option>Membership Discount</option><option>Promotion</option><option>Manager Approval</option></select></div>
+              <div><label>Discount</label><input type="text" value="10%"></div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="card summary-card">
+          <div class="summary-hero">
+            <small>Reservation Preview</small>
+            <h3>Luxury Hammam</h3>
+          </div>
+
+          <div class="summary-body">
+            <div class="summary-line"><span>Customer</span><strong>Fatima Al Nuaimi</strong></div>
+            <div class="summary-line"><span>Date</span><strong>20 July 2026</strong></div>
+            <div class="summary-line"><span>Time</span><strong>03:30–05:00 PM</strong></div>
+            <div class="summary-line"><span>Therapist</span><strong>Noor Ahmed</strong></div>
+            <div class="summary-line"><span>Room</span><strong>R04 • Moroccan Bath</strong></div>
+            <div class="summary-line"><span>Guests</span><strong>1 Guest</strong></div>
+            <div class="summary-line"><span>Status</span><strong style="color:var(--green)">Confirmed</strong></div>
+
+            <div class="price-breakdown">
+              <div class="price-row"><span>Luxury Hammam</span><strong id="servicePrice">QAR 620</strong></div>
+              <div class="price-row"><span>Add-ons</span><strong id="addonPrice">QAR 80</strong></div>
+              <div class="price-row discount"><span>Gold Member Discount</span><strong id="discountValue">− QAR 70</strong></div>
+              <div class="price-row"><span>Tax</span><strong>QAR 0</strong></div>
+            </div>
+
+            <div class="summary-line total"><span>Total Payable</span><strong id="totalPrice">QAR 630</strong></div>
+            <div class="summary-line"><span>Advance Required</span><strong>QAR 200</strong></div>
+            <div class="summary-line"><span>Balance at Spa</span><strong id="balancePrice">QAR 430</strong></div>
+
+            <div class="policy">Free cancellation up to 6 hours before the appointment. Late cancellation or no-show charges may apply according to branch policy.</div>
+
+            <div class="actions">
+              <button class="primary-btn" id="confirmBtn">Confirm Reservation</button>
+              <button class="secondary-btn" id="holdBtn">Save as Temporary Hold</button>
+              <button class="secondary-btn" id="linkBtn">Send Payment Link</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer class="footer">
+        <span>Nexilo Spa Management • Powered by Nexilo</span>
+        <span>Secure reservation workspace • Branch: Serenity Downtown</span>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Reservation saved successfully.</div>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+    const toast = document.getElementById("toast");
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+    }
+
+    function updateTotals() {
+      const selectedService = document.querySelector(".service-option.selected");
+      const service = selectedService ? Number(selectedService.dataset.price) : 0;
+      const addons = [...document.querySelectorAll(".addon.selected")]
+        .reduce((sum, item) => sum + Number(item.dataset.addon || 0), 0);
+      const discount = Math.round((service + addons) * 0.10);
+      const total = service + addons - discount;
+      const balance = Math.max(total - 200, 0);
+
+      document.getElementById("servicePrice").textContent = "QAR " + service;
+      document.getElementById("addonPrice").textContent = "QAR " + addons;
+      document.getElementById("discountValue").textContent = "− QAR " + discount;
+      document.getElementById("totalPrice").textContent = "QAR " + total;
+      document.getElementById("balancePrice").textContent = "QAR " + balance;
+      document.querySelector(".summary-hero h3").textContent =
+        selectedService ? selectedService.dataset.name : "Select Service";
+    }
+
+    menuBtn.addEventListener("click", () => sidebar.classList.toggle("open"));
+
+    document.addEventListener("click", (event) => {
+      if (window.innerWidth <= 760 && !sidebar.contains(event.target) && !menuBtn.contains(event.target)) {
+        sidebar.classList.remove("open");
+      }
+    });
+
+    document.querySelectorAll(".service-option").forEach(item => {
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".service-option").forEach(option => option.classList.remove("selected"));
+        item.classList.add("selected");
+        updateTotals();
+      });
+    });
+
+    document.querySelectorAll(".resource-option").forEach(item => {
+      item.addEventListener("click", () => {
+        const isRoom = item.querySelector("strong").textContent.startsWith("Room");
+        document.querySelectorAll(".resource-option").forEach(option => {
+          const optionIsRoom = option.querySelector("strong").textContent.startsWith("Room");
+          if (optionIsRoom === isRoom) option.classList.remove("selected");
+        });
+        item.classList.add("selected");
+      });
+    });
+
+    document.querySelectorAll(".addon").forEach(item => {
+      item.addEventListener("click", () => {
+        item.classList.toggle("selected");
+        updateTotals();
+      });
+    });
+
+    document.querySelectorAll(".time-slot:not(.unavailable)").forEach(slot => {
+      slot.addEventListener("click", () => {
+        document.querySelectorAll(".time-slot").forEach(item => item.classList.remove("selected"));
+        slot.classList.add("selected");
+        showToast("Appointment time changed to " + slot.textContent + ".");
+      });
+    });
+
+    document.getElementById("confirmBtn").addEventListener("click", () => showToast("Reservation confirmed and WhatsApp notification prepared."));
+    document.getElementById("holdBtn").addEventListener("click", () => showToast("Reservation saved as a temporary hold."));
+    document.getElementById("linkBtn").addEventListener("click", () => showToast("Secure payment link prepared for the customer."));
+  </script>
+</body>
+</html>
